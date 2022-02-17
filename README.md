@@ -14,6 +14,30 @@
 <!--- KIND, either express or implied.  See the License for the -->
 <!--- specific language governing permissions and limitations -->
 <!--- under the License. -->
+Erasure Coding on TVM
+==============================================
+This repository contains a private fork of the [TVM](https://github.com/apache/tvm) project.
+We will use the `ec-tvm` branch for any development on top of TVM
+
+## Setting up your local repository
+Run the following commands to set up your local repository for development
+```bash
+git clone --recursive https://github.com/jackkosaian/ec-tvm.git
+cd ec-tvm
+git checkout ec-tvm
+```
+
+We next set up the local repository to fetch changes to the upstream TVM:
+```bash
+git remote add upstream https://github.com/apache/tvm.git
+git remote set-url --push upstream DISABLE
+```
+
+To pull in changes from the original TVM project, perform:
+```bash
+git fetch upstream
+git merge upstream/main
+```
 
 <img src=https://raw.githubusercontent.com/apache/tvm-site/main/images/logo/tvm-logo-small.png width=128/> Open Deep Learning Compiler Stack
 ==============================================
