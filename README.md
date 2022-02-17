@@ -39,6 +39,28 @@ git fetch upstream
 git merge upstream/main
 ```
 
+## Running a Docker container
+To build and run the Docker container, execute:
+```bash
+./start_docker.sh
+```
+This will create and enter a container that has the current TVM repo mounted at `/home/tvm`
+
+## Building TVM
+To build TVM from within the Docker container, run:
+```bash
+./build.sh
+```
+
+## Example
+To run an example of tuning a GEMM with meta schedule, run:
+```bash
+cd ec
+python3 gemm.py
+```
+
+Other examples are available in the [ec](ec) directory.
+
 <img src=https://raw.githubusercontent.com/apache/tvm-site/main/images/logo/tvm-logo-small.png width=128/> Open Deep Learning Compiler Stack
 ==============================================
 [Documentation](https://tvm.apache.org/docs) |
