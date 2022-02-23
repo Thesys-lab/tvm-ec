@@ -312,7 +312,7 @@ set(USE_BNNS OFF)
 # - AUTO: auto set according to system information and feasibility
 # - ON: enable libbacktrace
 # - OFF: disable libbacktrace
-set(USE_LIBBACKTRACE AUTO)
+set(USE_LIBBACKTRACE OFF)
 
 # Whether to build static libtvm_runtime.a, the default is to build the dynamic
 # version: libtvm_runtime.so.

@@ -11,6 +11,27 @@ RUN apt-get dist-upgrade -y \
  && apt upgrade -y \
  && apt install -y git screen
 
+RUN apt install -y python3 \
+ && apt install -y python3-dev \
+ && apt install -y python3-setuptools \
+ && apt install -y python3-pip
+
+RUN apt install -y gcc \
+ && apt install -y libtinfo-dev \
+ && apt install -y zlib1g-dev \
+ && apt install -y build-essential
+
+RUN apt install -y cmake \
+ && apt install -y git \
+ && apt install -y libedit-dev \
+ && apt install -y libxml2-dev \
+ && apt install -y llvm
+
+RUN apt install -y libgl1-mesa-glx \
+ && apt install -y libglib2.0-0
+
+RUN apt install -y vim
+
 ADD config.sh config.sh
 ADD apt.txt apt.txt
 ADD pip.txt pip.txt

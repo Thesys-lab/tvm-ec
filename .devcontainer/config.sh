@@ -4,12 +4,12 @@
 set -xe
 
 # install system dependencies
-if test -f apt.txt ; then
-    # check for comments within the file then pass the package names apt install
-    grep -vE '^#' apt.txt | xargs apt install -y
-else
-    echo "No apt.txt file for $package, skipping package installation."
-fi
+# if test -f apt.txt ; then
+#     # check for comments within the file then pass the package names apt install
+#     grep -vE '^#' apt.txt | xargs apt install -y
+# else
+#     echo "No apt.txt file for $package, skipping package installation."
+# fi
 
 # installs python dependencies
 if test -f pip.txt ; then
