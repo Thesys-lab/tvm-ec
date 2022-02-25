@@ -251,3 +251,7 @@ _docs/
 jvm/target
 .config/configstore/
 .ci-py-scripts/
+
+# all executables in bandwidth (files without extensions)
+bandwidth/*
+!bandwidth/*.*
