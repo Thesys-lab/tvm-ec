@@ -255,3 +255,4 @@ jvm/target
 # all executables in bandwidth (files without extensions)
 bandwidth/*
 !bandwidth/*.*
+!bandwidth/Makefile
