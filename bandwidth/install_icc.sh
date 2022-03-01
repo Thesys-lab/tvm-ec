@@ -30,6 +30,6 @@ sudo apt install -y intel-hpckit
 
 source /opt/intel/oneapi/setvars.sh
 # adding this line to ~/.bashrc
-echo -e '\n# enable Intel OneApi\n/opt/intel/oneapi/setvars.sh' >> ~/.bashrc
+echo -e '\n# enable Intel OneApi\nsource /opt/intel/oneapi/setvars.sh' >> ~/.bashrc
 
 cd $CURRDIR

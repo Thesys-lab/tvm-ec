@@ -24,6 +24,7 @@ class GemmModule:
     Define a GEMM with M=32, N=128, K=64 
     """
     @T.prim_func
+    # def main(a: T.handle, b: T.handle, c: T.handle, m: T.int32, n: T.int32, k: T.int32):
     def main(a: T.handle, b: T.handle, c: T.handle):
         # We exchange data between function by handles, which are similar to pointer.
         T.func_attr({"global_symbol": "main", "tir.noalias": True})
@@ -38,7 +39,6 @@ class GemmModule:
                 with T.init():
                     C[vi, vj] = T.float32(0)
                 C[vi, vj] = C[vi, vj] + (A[vi, vk] * B[vk, vj])
-
 
 def autotune(args, sch, tgt_string):
     workdir = args.outdir
@@ -93,23 +93,47 @@ def add_common_args(parser):
                     help='Directory to save to')
     parser.add_argument('--tune_num_trials_per_iter', type=int, default=64)
     parser.add_argument('--tune_num_trials_total', type=int, default=10)
+    parser.add_argument('-M', type=int, default=32)
+    parser.add_argument('-N', type=int, default=128)
+    parser.add_argument('-K', type=int, default=64)
 
 
 def main():
+    @T.prim_func
+    def gemm(a: T.handle, b: T.handle, c: T.handle, m: T.int32, n: T.int32, k: T.int32):
+        # We exchange data between function by handles, which are similar to pointer.
+        T.func_attr({"global_symbol": "main", "tir.noalias": True})
+        # Create buffer from handles.
+        A = T.match_buffer(a, (m, k), dtype="float32")
+        B = T.match_buffer(b, (k, n), dtype="float32")
+        C = T.match_buffer(c, (m, n), dtype="float32")
+
+        for i, j, k in T.grid(m, n, k):
+            with T.block("C"):
+                vi, vj, vk = T.axis.remap("SSR", [i, j, k])
+                with T.init():
+                    C[vi, vj] = T.float32(0)
+                C[vi, vj] = C[vi, vj] + (A[vi, vk] * B[vk, vj])
+
+
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     args = parser.parse_args()
 
-    M = 32
-    N = 128
-    K = 64
+    M = args.M
+    N = args.N
+    K = args.K
     bitwidth = 8
 
     arg_gen_fn = partial(gen_mod_args, M, N, K)
     target_string = get_tvm_target_string()
 
+    # func = GemmModule.main.specialize({m: M, n: N, k: K})
     ir_mod = GemmModule
-    sch = tvm.tir.Schedule(ir_mod)
+    _, _, _, m, n, k = gemm.params
+    gemm = gemm.specialize({m: M, n: N, k: K})
+    # sch = tvm.tir.Schedule(ir_mod)
+    sch = tvm.tir.Schedule(gemm)
     sch_new = autotune(args, sch, target_string)
 
     if args.debug:
