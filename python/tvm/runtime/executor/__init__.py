@@ -15,17 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import pytest
+"""This module contains Python wrappers for the TVM C++ Executor implementations.
 
+NOTE: at present, only AOT Executor is contained here. The others are:
+ - GraphExecutor, in python/tvm/contrib/graph_executor.py
+ - VM Executor, in python/tvm/runtime/vm.py
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--serial-number",
-        required=True,
-        help=("Android device serial number list from 'adb' command."),
-    )
-
-
-@pytest.fixture
-def android_serial_number(request):
-    return request.config.getoption("--serial-number")
+TODO(areusch): Consolidate these into this module.
+"""
+from .aot_executor import AotModule
