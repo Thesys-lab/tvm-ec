@@ -9,7 +9,7 @@ import numpy as np
 import os
 import shutil
 import tvm
-from tvm import te
+from tvm import te, auto_scheduler
 from tvm.script import tir as T
 from tvm.ir.module import IRModule
 from tvm import tir
@@ -24,7 +24,6 @@ class GemmModule:
     Define a GEMM with M=32, N=128, K=64 
     """
     @T.prim_func
-    # def main(a: T.handle, b: T.handle, c: T.handle, m: T.int32, n: T.int32, k: T.int32):
     def main(a: T.handle, b: T.handle, c: T.handle):
         # We exchange data between function by handles, which are similar to pointer.
         T.func_attr({"global_symbol": "main", "tir.noalias": True})
@@ -102,7 +101,7 @@ def main():
     @T.prim_func
     def gemm(a: T.handle, b: T.handle, c: T.handle, m: T.int32, n: T.int32, k: T.int32):
         # We exchange data between function by handles, which are similar to pointer.
-        T.func_attr({"global_symbol": "main", "tir.noalias": True})
+        T.func_attr({"global_symbol": "gemm", "tir.noalias": True})
         # Create buffer from handles.
         A = T.match_buffer(a, (m, k), dtype="float32")
         B = T.match_buffer(b, (k, n), dtype="float32")
@@ -115,7 +114,6 @@ def main():
                     C[vi, vj] = T.float32(0)
                 C[vi, vj] = C[vi, vj] + (A[vi, vk] * B[vk, vj])
 
-
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     args = parser.parse_args()
@@ -123,16 +121,12 @@ def main():
     M = args.M
     N = args.N
     K = args.K
-    bitwidth = 8
 
     arg_gen_fn = partial(gen_mod_args, M, N, K)
     target_string = get_tvm_target_string()
 
-    # func = GemmModule.main.specialize({m: M, n: N, k: K})
-    ir_mod = GemmModule
     _, _, _, m, n, k = gemm.params
     gemm = gemm.specialize({m: M, n: N, k: K})
-    # sch = tvm.tir.Schedule(ir_mod)
     sch = tvm.tir.Schedule(gemm)
     sch_new = autotune(args, sch, target_string)
 

@@ -19,6 +19,7 @@ elif [[ $1 = "clean" ]]; then
     make clean
 else
     echo "argument unrecognized, choose from icc, openmp, stream, clean"
+    exit 1
 fi
 
 export OMP_NUM_THREADS=$(($(cat /proc/cpuinfo | grep "cpu cores" | head -1 | tr -dc '0-9')))
