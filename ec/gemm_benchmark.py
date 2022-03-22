@@ -16,7 +16,7 @@ def add_common_args(parser):
                     help='Specify the location to store the benchmark result')
     parser.add_argument('--tune_num_trials_total', type=int, default=500)
     parser.add_argument("--square_matrix_sizes", nargs="+", default=[32,], type=int,
-                    help='Specify the size of matrix to tune on seperated by space')
+                    help='Specify the size of square matrix to tune on seperated by space')
 
 
 def run_benchmark(argv):

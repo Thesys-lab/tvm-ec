@@ -66,7 +66,8 @@ def benchmark(argv):
     func = tvm.build(sch, args, target)
     a_np = np.random.uniform(size=(M, K)).astype(np.uint8)
     b_np = np.random.uniform(size=(K, N)).astype(np.uint8)
-    out_np = a_np.dot(b_np)
+    # out_np = np_bitmatrix(M, N, K, a_np, b_np)
+    out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
 
     dev = tvm.cpu()
     a_tvm = tvm.nd.array(a_np, device=dev)
@@ -75,7 +76,7 @@ def benchmark(argv):
     func(a_tvm, b_tvm, out_tvm)
 
     # Check results
-    np.testing.assert_allclose(out_np, out_tvm.numpy(), rtol=1e-3)
+    # np.testing.assert_equal(out_np, out_tvm.numpy())
 
     evaluator = func.time_evaluator(func.entry_name, dev, min_repeat_ms=500)
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
@@ -92,7 +93,7 @@ def get_best_benchmark(argv):
     N = argv['N']
     K = argv['K']
 
-    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "float32"), target=target)
+    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "uint8"), target=target)
 
     log_file = argv['log_file']
     
@@ -101,22 +102,22 @@ def get_best_benchmark(argv):
     func = tvm.build(sch, args, target)
     a_np = np.random.uniform(size=(M, K)).astype(np.uint8)
     b_np = np.random.uniform(size=(K, N)).astype(np.uint8)
-    out_np = 1
+    # out_np = np_bitmatrix(M, N, K, a_np, b_np)
+    out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
 
     dev = tvm.cpu()
     a_tvm = tvm.nd.array(a_np, device=dev)
     b_tvm = tvm.nd.array(b_np, device=dev)
-    out_tvm = tvm.nd.empty(out_np.shape, device=dev, dtype='uint8')
+    out_tvm = tvm.nd.empty((M, N), device=dev, dtype='uint8')
     func(a_tvm, b_tvm, out_tvm)
 
     # Check results
-    np.testing.assert_allclose(out_np, out_tvm.numpy(), rtol=1e-3)
+    # np.testing.assert_equal(out_np, out_tvm.numpy())
 
     evaluator = func.time_evaluator(func.entry_name, dev, min_repeat_ms=500)
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
-    # bandwidth = ((M*N)+(N*K)+(K*M))*4/(1024**2)/ex_time
-    bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
+    bandwidth = (a_np.size+b_np.size+out_np.size)*b_np.itemsize/(1024**2)/ex_time
     return (ex_time, bandwidth)
 
 
@@ -178,25 +179,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    # M = 3
-    # K = 5
-    # N = 4
-    # A = np.array([
-    #     [1, 2, 3, 4, 5],
-    #     [6, 7, 8, 9, 10],
-    #     [10, 11, 12, 13, 14],
-    # ]).astype(np.uint8)
-
-    # B = np.array([
-    #     [1, 6, 11, 16],
-    #     [2, 7, 12, 17],
-    #     [3, 8, 13, 18],
-    #     [4, 9, 14, 19],
-    #     [5, 10, 15, 20]
-    # ]).astype(np.uint8)
-
-    # print(A)
-    # print(B)
-
-    # print(np_bitmatrix(M, N, K, A, B))
