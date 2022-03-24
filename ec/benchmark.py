@@ -1,4 +1,7 @@
-from bitmatrix_autoschedule import benchmark, get_best_benchmark
+from bitmatrix_autoschedule import benchmark as b_benchmark
+from bitmatrix_autoschedule import get_best_benchmark as b_best_benchmark
+from gemm_autoschedule import benchmark as g_benchmark
+from gemm_autoschedule import get_best_benchmark as g_best_benchmark
 from copy import deepcopy
 import json
 import argparse
@@ -20,10 +23,16 @@ def add_common_args(parser):
     parser.add_argument("--config_file", default=None,
                     help='The configuration file (JSON) to run the experiment. \
                         should consists of a list of benchmark configs')
+    parser.add_argument("--computation", default='b',
+                    help='Specify the computation type: "b" for bitmatrix, "g" for gemm')
 
 
 def run_benchmark(argv):
     result = []
+    if argv.computation == 'b':
+        benchmark = b_benchmark
+    else:
+        benchmark = g_benchmark
     if argv.config_file:
         with open(argv.config_file) as f:
             experiments = json.load(f)
@@ -64,6 +73,10 @@ def run_benchmark(argv):
 
 
 def best_benchmark(argv):
+    if argv.computation == 'b':
+        get_best_benchmark = b_best_benchmark
+    else:
+        get_best_benchmark = g_best_benchmark
     a = {
             'M': argv.M,
             'N': argv.N,
@@ -74,8 +87,6 @@ def best_benchmark(argv):
 
 
 if __name__ == '__main__':
-    # run_benchmark((2048,))
-    # run_benchmark((32,))
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     argv = parser.parse_args()
