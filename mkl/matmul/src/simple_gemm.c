@@ -6,16 +6,23 @@
 #include <stdlib.h>
 #include "mkl.h"
 
-const int m = 1024;
-const int k = 1024;
-const int n = 1024;
+const int num_trials = 20;
 
 
-int main()
+int main(int argc, char *argv[])
 {
+    if( argc != 4 ) {
+      printf("Wrong number of arguments supplied (%d provided), please specify m, n, k in the order.\n", argc);
+      return 1;
+    }
+
     double *A, *B, *C;
-    int i, j;
+    int m, n, k, i, j;
     double alpha, beta;
+
+    m = atoi(argv[1]);
+    n = atoi(argv[2]);
+    k = atoi(argv[3]);
 
     printf ("\n This example computes real matrix C=alpha*A*B+beta*C using \n"
             " Intel(R) MKL function dgemm, where A, B, and  C are matrices and \n"
@@ -53,7 +60,8 @@ int main()
 
     printf (" Computing matrix product using Intel(R) MKL dgemm function via CBLAS interface \n\n");
     double start = dsecnd();
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
+    for (int i = 0; i < num_trials; i++)
+      cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
                 m, n, k, alpha, A, k, B, n, beta, C, n);
     double end = dsecnd();
     printf ("\n Computations completed.\n\n");
@@ -91,7 +99,7 @@ int main()
     
     printf ("\nStart time: %f s\n", start);
     printf ("End time: %f s\n\n", end);
-    double duration = end - start;
+    double duration = (end - start)/(double)num_trials;
     double size = (double)m*k*sizeof( double ) + (double)k*n*sizeof( double ) + (double)m*n*sizeof( double );
     double bandwidth = size/duration/(1024*1024);
     printf ("Bandwidth: %f MB/s\n\n", bandwidth);

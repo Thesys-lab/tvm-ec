@@ -1,6 +1,4 @@
 import argparse
-
-from matplotlib.pyplot import axis
 from common import get_tvm_target_string
 import numpy as np
 import tvm
