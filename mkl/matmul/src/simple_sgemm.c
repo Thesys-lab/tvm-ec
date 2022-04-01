@@ -6,23 +6,23 @@
 #include <stdlib.h>
 #include "mkl.h"
 
-const int num_trials = 20;
 
 
 int main(int argc, char *argv[])
 {
-    if( argc != 4 ) {
-      printf("Wrong number of arguments supplied (%d provided), please specify m, n, k in the order.\n", argc);
+    if( argc != 5 ) {
+      printf("Wrong number of arguments supplied (%d provided), please specify m, n, k, num_trials in the order.\n", argc);
       return 1;
     }
 
     float *A, *B, *C;
-    int m, n, k, i, j;
+    int m, n, k, i, j, num_trials;
     float alpha, beta;
 
     m = atoi(argv[1]);
     n = atoi(argv[2]);
     k = atoi(argv[3]);
+    num_trials = atoi(argv[4]);
 
     printf ("\n This example computes real matrix C=alpha*A*B+beta*C using \n"
             " Intel(R) MKL function sgemm, where A, B, and  C are matrices and \n"
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         C[i] = 0.0;
     }
 
-    printf (" Computing matrix product using Intel(R) MKL dgemm function via CBLAS interface \n\n");
+    printf (" Computing matrix product using Intel(R) MKL sgemm function via CBLAS interface \n\n");
     // warm-up
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
                 m, n, k, alpha, A, k, B, n, beta, C, n);
