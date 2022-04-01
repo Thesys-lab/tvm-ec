@@ -59,9 +59,12 @@ int main(int argc, char *argv[])
     }
 
     printf (" Computing matrix product using Intel(R) MKL dgemm function via CBLAS interface \n\n");
+    // warm-up
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
+                m, n, k, alpha, A, k, B, n, beta, C, n);
     double start = dsecnd();
     for (int i = 0; i < num_trials; i++)
-      cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
+        cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
                 m, n, k, alpha, A, k, B, n, beta, C, n);
     double end = dsecnd();
     printf ("\n Computations completed.\n\n");
@@ -96,10 +99,11 @@ int main(int argc, char *argv[])
     mkl_free(C);
 
     printf (" Example completed. \n\n");
-    
-    printf ("\nStart time: %f s\n", start);
-    printf ("End time: %f s\n\n", end);
+
     double duration = (end - start)/(double)num_trials;
+    printf ("\nStart time: %f s\n", start);
+    printf ("End time: %f s\n", end);
+    printf ("Avg Duration: %f s\n\n", duration);
     double size = (double)m*k*sizeof( double ) + (double)k*n*sizeof( double ) + (double)m*n*sizeof( double );
     double bandwidth = size/duration/(1024*1024);
     printf ("Bandwidth: %f MB/s\n\n", bandwidth);
