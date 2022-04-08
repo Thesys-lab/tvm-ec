@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
                 m, n, k, alpha, A, k, B, n, beta, C, n);
     double end = dsecnd();
-    printf ("\n Computations completed.\n\n");
+    printf ("\n Computations completed for %d trials.\n\n", num_trials);
 
     printf (" Top left corner of matrix A: \n");
     for (i=0; i<min(m,6); i++) {
