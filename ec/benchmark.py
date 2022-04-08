@@ -11,6 +11,9 @@ def add_common_args(parser):
     parser.add_argument('-M', type=int, default=32)
     parser.add_argument('-N', type=int, default=128)
     parser.add_argument('-K', type=int, default=64)
+    parser.add_argument('-ecParity', type=int, default=4)
+    parser.add_argument('-ecData', type=int, default=8)
+    parser.add_argument('-ecW', type=int, default=8)
     parser.add_argument('--read_log_file', default=None,
                     help='Run the benchmark with tuned schedule in log file')
     parser.add_argument('--log_dir', default='log/default/',
@@ -33,18 +36,29 @@ def run_benchmark(argv):
         benchmark = b_benchmark
     else:
         benchmark = g_benchmark
+    a = {}
     if argv.config_file:
         with open(argv.config_file) as f:
             experiments = json.load(f)
 
         for exp in experiments:
-            a = {
-                'M': exp['M'],
-                'N': exp['N'],
-                'K': exp['K'],
-                'log_file': argv.log_dir+'m_'+str(exp['M'])+'_n_'+str(exp['N'])+'_k_'+str(exp['K'])+'.json',
-                'tune_num_trials_total': exp['tune_num_trials_total']
-            }
+            if argv.computation == 'b':
+                a = {
+                    'ecParity': exp['ecParity'],
+                    'N': exp['N'],
+                    'ecData': exp['ecData'],
+                    'ecW': exp['ecW'],
+                    'log_file': argv.log_dir+'P_'+str(exp['ecParity'])+'_n_'+str(exp['N'])+'_D_'+str(exp['ecData'])+'.json',
+                    'tune_num_trials_total': exp['tune_num_trials_total']
+                }
+            else:
+                a = {
+                    'M': exp['M'],
+                    'N': exp['N'],
+                    'K': exp['K'],
+                    'log_file': argv.log_dir+'m_'+str(exp['M'])+'_n_'+str(exp['N'])+'_k_'+str(exp['K'])+'.json',
+                    'tune_num_trials_total': exp['tune_num_trials_total']
+                }
 
             out = benchmark(a)
             a['execution_time(s)'] = out[0]
@@ -54,13 +68,23 @@ def run_benchmark(argv):
 
     else:       
         for m in argv.square_matrix_sizes:
-            a = {
-                'M': m,
-                'N': m,
-                'K': m,
-                'log_file': argv.log_dir+'m_'+str(m)+'.json',
-                'tune_num_trials_total': argv.tune_num_trials_total
-            }
+            if argv.computation == 'b':
+                a = {
+                    'ecParity': m,
+                    'N': m,
+                    'ecData': m,
+                    'ecW': argv.ecW,
+                    'log_file': argv.log_dir+'P_n_d_'+str(m)+'.json',
+                    'tune_num_trials_total': exp['tune_num_trials_total']
+                }
+            else:
+                a = {
+                    'M': m,
+                    'N': m,
+                    'K': m,
+                    'log_file': argv.log_dir+'m_'+str(m)+'.json',
+                    'tune_num_trials_total': argv.tune_num_trials_total
+                }
 
             out = benchmark(a)
             a['execution_time(s)'] = out[0]

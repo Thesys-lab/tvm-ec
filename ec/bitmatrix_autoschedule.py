@@ -65,81 +65,86 @@ def add_common_args(parser):
     parser.add_argument('--tune_verbose', type=int, default=1)
 
 
-# def benchmark(argv):
-#     target = get_tvm_target_string()
+def benchmark(argv):
+    target = get_tvm_target_string()
 
-#     M = argv['M']
-#     N = argv['N']
-#     K = argv['K']
+    ecParity = argv['ecParity']
+    ecData = argv['ecData']
+    ecW = argv['ecW']
+    N = argv['N']
+    M = ecParity*ecW
+    K = ecData*ecW
 
-#     task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "uint8"), target=target)
+    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, ecW, "uint8"), target=target)
 
-#     log_file = argv['log_file']
-#     tune_option = auto_scheduler.TuningOptions(
-#         num_measure_trials=argv['tune_num_trials_total'],
-#         measure_callbacks=[auto_scheduler.RecordToFile(log_file)],
-#         verbose=0,
-#     )
+    log_file = argv['log_file']
+    tune_option = auto_scheduler.TuningOptions(
+        num_measure_trials=argv['tune_num_trials_total'],
+        measure_callbacks=[auto_scheduler.RecordToFile(log_file)],
+        verbose=0,
+    )
 
-#     task.tune(tune_option)
-#     sch, args = task.apply_best(log_file)
+    task.tune(tune_option)
+    sch, args = task.apply_best(log_file)
 
-#     func = tvm.build(sch, args, target)
-#     a_np = np.random.uniform(size=(M, K)).astype(np.uint8)
-#     b_np = np.random.uniform(size=(K, N)).astype(np.uint8)
-#     # out_np = np_bitmatrix(M, N, K, a_np, b_np)
-#     out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
+    func = tvm.build(sch, args, target)
+    a_np = np.random.randint(np.iinfo(np.uint8).max, size=(M, ecData)).astype(np.uint8)
+    b_np = np.random.randint(np.iinfo(np.uint8).max, size=(K, N)).astype(np.uint8)
+    # out_np = np_bitmatrix(M, N, K, a_np, b_np)
+    out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
 
-#     dev = tvm.cpu()
-#     a_tvm = tvm.nd.array(a_np, device=dev)
-#     b_tvm = tvm.nd.array(b_np, device=dev)
-#     out_tvm = tvm.nd.empty(out_np.shape, device=dev, dtype="uint8")
-#     func(a_tvm, b_tvm, out_tvm)
+    dev = tvm.cpu()
+    a_tvm = tvm.nd.array(a_np, device=dev)
+    b_tvm = tvm.nd.array(b_np, device=dev)
+    out_tvm = tvm.nd.empty(out_np.shape, device=dev, dtype="uint8")
+    func(a_tvm, b_tvm, out_tvm)
 
-#     # Check results
-#     # np.testing.assert_equal(out_np, out_tvm.numpy())
+    # Check results
+    # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-#     evaluator = func.time_evaluator(func.entry_name, dev, number=50)
-#     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
+    evaluator = func.time_evaluator(func.entry_name, dev, number=50)
+    ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
-#     # bandwidth = ((M*N)+(N*K)+(K*M))*4/(1024**2)/ex_time
-#     bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
-#     return (ex_time, bandwidth)
+    bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
+    return (ex_time, bandwidth)
 
 
-# def get_best_benchmark(argv):
-#     target = get_tvm_target_string()
+def get_best_benchmark(argv):
+    target = get_tvm_target_string()
 
-#     M = argv['M']
-#     N = argv['N']
-#     K = argv['K']
+    ecParity = argv['ecParity']
+    ecData = argv['ecData']
+    ecW = argv['ecW']
+    N = argv['N']
+    M = ecParity*ecW
+    K = ecData*ecW
 
-#     task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "uint8"), target=target)
+    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, ecW, "uint8"), target=target)
 
-#     log_file = argv['log_file']
+    log_file = argv['log_file']
     
-#     sch, args = task.apply_best(log_file)
+    sch, args = task.apply_best(log_file)
 
-#     func = tvm.build(sch, args, target)
-#     a_np = np.random.randint(np.iinfo(np.uint8).max, size=(M, ecData)).astype(np.uint8)
-#     b_np = np.random.randint(np.iinfo(np.uint8).max, size=(K, N)).astype(np.uint8)
-#     # out_np = np_bitmatrix(M, N, K, a_np, b_np)
-#     out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
+    func = tvm.build(sch, args, target)
+    a_np = np.random.randint(np.iinfo(np.uint8).max, size=(M, ecData)).astype(np.uint8)
+    b_np = np.random.randint(np.iinfo(np.uint8).max, size=(K, N)).astype(np.uint8)
+    # out_np = np_bitmatrix(M, N, K, a_np, b_np)
+    out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
 
-#     dev = tvm.cpu()
-#     a_tvm = tvm.nd.array(a_np, device=dev)
-#     b_tvm = tvm.nd.array(b_np, device=dev)
-#     out_tvm = tvm.nd.empty((M, N), device=dev, dtype='uint8')
-#     func(a_tvm, b_tvm, out_tvm)
+    dev = tvm.cpu()
+    a_tvm = tvm.nd.array(a_np, device=dev)
+    b_tvm = tvm.nd.array(b_np, device=dev)
+    out_tvm = tvm.nd.empty(out_np.shape, dtype="uint8", device=dev)
+    func(a_tvm, b_tvm, out_tvm)
 
-#     # Check results
-#     # np.testing.assert_equal(out_np, out_tvm.numpy())
+    # Check results
+    # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-#     evaluator = func.time_evaluator(func.entry_name, dev, number=50)
-#     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
+    evaluator = func.time_evaluator(func.entry_name, dev, number=50)
+    ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
-#     bandwidth = (a_np.size+b_np.size+out_np.size)*b_np.itemsize/(1024**2)/ex_time
-#     return (ex_time, bandwidth)
+    bandwidth = (a_np.size+b_np.size+out_np.size)*b_np.itemsize/(1024**2)/ex_time
+    return (ex_time, bandwidth)
 
 
 def main():
