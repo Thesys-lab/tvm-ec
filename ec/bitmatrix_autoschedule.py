@@ -3,56 +3,47 @@ from common import get_tvm_target_string
 import numpy as np
 import tvm
 from tvm import te, auto_scheduler
-from tvm import tir
-from common import np_bitmatrix
+from common import np_bitmatrix, np_expand_bitmatrix
 
 xor = te.comm_reducer(lambda x, y: x ^ y, lambda t: tvm.tir.const(0, dtype=t), name="xor")
 
-def map(idx, ecW, A):
-    interm = A & (1 << (ecW - idx - 1))
-    return tir.Select(interm > 0, tvm.tir.const(0xff, dtype='uint8'), tvm.tir.const(0, dtype='uint8'))
-
-@auto_scheduler.register_workload  # Note the auto_scheduler decorator
-def bitmatrix(M, N, K, ecW, dtype):
-    ecData = K//ecW
-    A = te.placeholder((M, ecData), name="A", dtype=dtype)
-    B = te.placeholder((K, N), name="B", dtype=dtype)
-
-    A_expand = te.compute((M, K), lambda i, j: map(j%ecW, ecW, A[i, te.floordiv(j, ecW)]), name="expand")
-
-    k = te.reduce_axis((0, K), name="k")
-    bitmul = te.compute(
-        (M, N),
-        lambda i, j: xor(A_expand[i, k] & B[k, j], axis = k),
-        name="bitmul",
-        attrs={"layout_free_placeholders": [B]},  # enable automatic layout transform for tensor B
-    )
-
-    return [A, B, bitmul]
+# def map(idx, ecW, A):
+#     interm = A & (1 << (ecW - idx - 1))
+#     return tir.Select(interm > 0, tvm.tir.const(0xff, dtype='uint8'), tvm.tir.const(0, dtype='uint8'))
 
 # @auto_scheduler.register_workload  # Note the auto_scheduler decorator
-# def bitmatrix(M, N, K, dtype):
-#     A = te.placeholder((M, K), name="A", dtype=dtype)
+# def bitmatrix(M, N, K, ecW, dtype):
+#     ecData = K//ecW
+#     A = te.placeholder((M, ecData), name="A", dtype=dtype)
 #     B = te.placeholder((K, N), name="B", dtype=dtype)
+
+#     A_expand = te.compute((M, K), lambda i, j: map(j%ecW, ecW, A[i, te.floordiv(j, ecW)]), name="expand")
 
 #     k = te.reduce_axis((0, K), name="k")
 #     bitmul = te.compute(
 #         (M, N),
-#         lambda i, j: xor(A[i, k] & B[k, j], axis = k),
+#         lambda i, j: xor(A_expand[i, k] & B[k, j], axis = k),
 #         name="bitmul",
 #         attrs={"layout_free_placeholders": [B]},  # enable automatic layout transform for tensor B
 #     )
-#     out = te.compute((M, N), lambda i, j: te.popcount(bitmul[i, j])&0b1, name="out")
 
-#     return [A, B, out]
+#     return [A, B, bitmul]
 
-# @auto_scheduler.register_workload
-# def expand(M, K, ecW, dtype):
-#     ecData = K//ecW
-#     A = te.placeholder((M, ecData), name="A", dtype=dtype)
-#     A_expand = te.compute((M, K), lambda i, j: map(j%ecW, ecW, A[i, te.floordiv(j, ecW)]), name="expand")
+@auto_scheduler.register_workload  # Note the auto_scheduler decorator
+def bitmatrix(M, N, K, dtype):
+    A = te.placeholder((M, K), name="A", dtype=dtype)
+    B = te.placeholder((K, N), name="B", dtype=dtype)
 
-#     return [A, A_expand]
+    k = te.reduce_axis((0, K), name="k")
+    bitmul = te.compute(
+        (M, N),
+        lambda i, j: xor(A[i, k] & B[k, j], axis = k),
+        name="bitmul",
+        attrs={"layout_free_placeholders": [B]},  # enable automatic layout transform for tensor B
+    )
+    # out = te.compute((M, N), lambda i, j: te.popcount(bitmul[i, j])&0b1, name="out")
+
+    return [A, B, bitmul]
 
 def add_common_args(parser):
     parser.add_argument('-ecParity', type=int, default=4)
@@ -75,7 +66,7 @@ def benchmark(argv):
     M = ecParity*ecW
     K = ecData*ecW
 
-    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, ecW, "uint8"), target=target)
+    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "uint8"), target=target)
 
     log_file = argv['log_file']
     tune_option = auto_scheduler.TuningOptions(
@@ -89,12 +80,13 @@ def benchmark(argv):
 
     func = tvm.build(sch, args, target)
     a_np = np.random.randint(np.iinfo(np.uint8).max, size=(M, ecData)).astype(np.uint8)
+    a_np_expanded = np_expand_bitmatrix(a_np)
     b_np = np.random.randint(np.iinfo(np.uint8).max, size=(K, N)).astype(np.uint8)
     # out_np = np_bitmatrix(M, N, K, a_np, b_np)
     out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
 
     dev = tvm.cpu()
-    a_tvm = tvm.nd.array(a_np, device=dev)
+    a_tvm = tvm.nd.array(a_np_expanded, device=dev)
     b_tvm = tvm.nd.array(b_np, device=dev)
     out_tvm = tvm.nd.empty(out_np.shape, device=dev, dtype="uint8")
     func(a_tvm, b_tvm, out_tvm)
@@ -119,7 +111,7 @@ def get_best_benchmark(argv):
     M = ecParity*ecW
     K = ecData*ecW
 
-    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, ecW, "uint8"), target=target)
+    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "uint8"), target=target)
 
     log_file = argv['log_file']
     
@@ -127,12 +119,13 @@ def get_best_benchmark(argv):
 
     func = tvm.build(sch, args, target)
     a_np = np.random.randint(np.iinfo(np.uint8).max, size=(M, ecData)).astype(np.uint8)
+    a_np_expanded = np_expand_bitmatrix(a_np)
     b_np = np.random.randint(np.iinfo(np.uint8).max, size=(K, N)).astype(np.uint8)
     # out_np = np_bitmatrix(M, N, K, a_np, b_np)
     out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
 
     dev = tvm.cpu()
-    a_tvm = tvm.nd.array(a_np, device=dev)
+    a_tvm = tvm.nd.array(a_np_expanded, device=dev)
     b_tvm = tvm.nd.array(b_np, device=dev)
     out_tvm = tvm.nd.empty(out_np.shape, dtype="uint8", device=dev)
     func(a_tvm, b_tvm, out_tvm)
@@ -161,7 +154,7 @@ def main():
     M = ecParity*ecW
     K = ecData*ecW
 
-    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, ecW, "uint8"), target=target)
+    task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "uint8"), target=target)
 
     # Inspect the computational graph
     print("Computational DAG:")
@@ -182,11 +175,12 @@ def main():
     func = tvm.build(sch, args, target)
 
     a_np = np.random.randint(np.iinfo(np.uint8).max, size=(M, ecData)).astype(np.uint8)
+    a_np_expanded = np_expand_bitmatrix(a_np)
     b_np = np.random.randint(np.iinfo(np.uint8).max, size=(K, N)).astype(np.uint8)
     out_np = np_bitmatrix(M, N, K, a_np, b_np)
 
     dev = tvm.cpu()
-    a_tvm = tvm.nd.array(a_np, device=dev)
+    a_tvm = tvm.nd.array(a_np_expanded, device=dev)
     b_tvm = tvm.nd.array(b_np, device=dev)
     out_tvm = tvm.nd.empty(out_np.shape, dtype="uint8", device=dev)
     func(a_tvm, b_tvm, out_tvm)
