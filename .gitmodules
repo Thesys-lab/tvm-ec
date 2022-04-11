@@ -16,3 +16,6 @@
 [submodule "3rdparty/cutlass"]
 	path = 3rdparty/cutlass
 	url = https://github.com/NVIDIA/cutlass
+[submodule "xorslp_ec"]
+	path = xorslp_ec
+	url = https://github.com/JiyuuuHuuu/xorslp_ec.git
