@@ -97,16 +97,24 @@ def run_benchmark(argv):
 
 
 def best_benchmark(argv):
+    a = {}
     if argv.computation == 'b':
         get_best_benchmark = b_best_benchmark
+        a = {
+                'ecParity': argv.ecParity,
+                'N': argv.N,
+                'ecData': argv.ecData,
+                'ecW': argv.ecW,
+                'log_file': argv.read_log_file
+            }
     else:
         get_best_benchmark = g_best_benchmark
-    a = {
-            'M': argv.M,
-            'N': argv.N,
-            'K': argv.K,
-            'log_file': argv.read_log_file,
-    }
+        a = {
+                'M': argv.M,
+                'N': argv.N,
+                'K': argv.K,
+                'log_file': argv.read_log_file,
+        }
     print(get_best_benchmark(a))
 
 
