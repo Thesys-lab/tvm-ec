@@ -94,7 +94,7 @@ def benchmark(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    evaluator = func.time_evaluator(func.entry_name, dev, number=50)
+    evaluator = func.time_evaluator(func.entry_name, dev, number=100, repeat=10)
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
     bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
@@ -133,7 +133,7 @@ def get_best_benchmark(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    evaluator = func.time_evaluator(func.entry_name, dev, number=50)
+    evaluator = func.time_evaluator(func.entry_name, dev, number=100, repeat=10)
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
     bandwidth = (a_np.size+b_np.size+out_np.size)*b_np.itemsize/(1024**2)/ex_time
@@ -188,7 +188,7 @@ def main():
     # Check results
     np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    evaluator = func.time_evaluator(func.entry_name, dev, number=50)
+    evaluator = func.time_evaluator(func.entry_name, dev, number=100, repeat=10)
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
     print(
         "Execution time of this operator: %.6f s"
