@@ -49,7 +49,8 @@ def run_benchmark(argv):
                     'ecData': exp['ecData'],
                     'ecW': exp['ecW'],
                     'log_file': argv.log_dir+'P_'+str(exp['ecParity'])+'_n_'+str(exp['N'])+'_D_'+str(exp['ecData'])+'.json',
-                    'tune_num_trials_total': exp['tune_num_trials_total']
+                    'tune_num_trials_total': exp['tune_num_trials_total'],
+                    'bandwidth_size': 'h'
                 }
             else:
                 a = {
@@ -75,7 +76,8 @@ def run_benchmark(argv):
                     'ecData': m,
                     'ecW': argv.ecW,
                     'log_file': argv.log_dir+'P_n_d_'+str(m)+'.json',
-                    'tune_num_trials_total': exp['tune_num_trials_total']
+                    'tune_num_trials_total': exp['tune_num_trials_total'],
+                    'bandwidth_size': 'h'
                 }
             else:
                 a = {
@@ -105,7 +107,8 @@ def best_benchmark(argv):
                 'N': argv.N,
                 'ecData': argv.ecData,
                 'ecW': argv.ecW,
-                'log_file': argv.read_log_file
+                'log_file': argv.read_log_file,
+                'bandwidth_size': 'h'
             }
     else:
         get_best_benchmark = g_best_benchmark

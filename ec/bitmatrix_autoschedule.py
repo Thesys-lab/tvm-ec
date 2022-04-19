@@ -54,6 +54,7 @@ def add_common_args(parser):
                     help='Directory to save log to')
     parser.add_argument('--tune_num_trials_total', type=int, default=10)
     parser.add_argument('--tune_verbose', type=int, default=1)
+    parser.add_argument("--bandwidth_size", default='h')
 
 
 def benchmark(argv):
@@ -97,7 +98,11 @@ def benchmark(argv):
     evaluator = func.time_evaluator(func.entry_name, dev, number=100, repeat=10)
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
-    bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
+    bandwidth = 0
+    if argv['bandwidth_size'] == 'f':
+        bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
+    else:
+        bandwidth = (b_np.size)*out_np.itemsize/(1024**2)/ex_time
     return (ex_time, bandwidth)
 
 
@@ -136,7 +141,11 @@ def get_best_benchmark(argv):
     evaluator = func.time_evaluator(func.entry_name, dev, number=100, repeat=10)
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
-    bandwidth = (a_np.size+b_np.size+out_np.size)*b_np.itemsize/(1024**2)/ex_time
+    bandwidth = 0
+    if argv['bandwidth_size'] == 'f':
+        bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
+    else:
+        bandwidth = (b_np.size)*out_np.itemsize/(1024**2)/ex_time
     return (ex_time, bandwidth)
 
 
