@@ -1,0 +1,22 @@
+[
+    {
+        "ecParity": 2,
+        "N": 65536,
+        "ecData": 9,
+        "ecW": 8,
+        "log_file": "log/expand_65536/P_2_n_65536_D_9.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.000282232655,
+        "bandwidth(MB/s)": 19487.955173371283
+    },
+    {
+        "ecParity": 2,
+        "N": 65536,
+        "ecData": 10,
+        "ecW": 8,
+        "log_file": "log/expand_65536/P_2_n_65536_D_10.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.000389475215,
+        "bandwidth(MB/s)": 15405.736634334036
+    }
+]

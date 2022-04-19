@@ -1,0 +1,38 @@
+[
+    {
+        "M": 4,
+        "N": 65536,
+        "K": 8,
+        "log_file": "log/non_square_matrix_gemm_20000/m_4_n_65536_k_8.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 5.4562395437564574e-05,
+        "bandwidth(MB/s)": 73312.80157759598
+    },
+    {
+        "M": 16,
+        "N": 65536,
+        "K": 32,
+        "log_file": "log/non_square_matrix_gemm_20000/m_16_n_65536_k_32.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0012770344595879556,
+        "bandwidth(MB/s)": 12530.55702988872
+    },
+    {
+        "M": 128,
+        "N": 65536,
+        "K": 256,
+        "log_file": "log/non_square_matrix_gemm_20000/m_128_n_65536_k_256.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.019346724000000003,
+        "bandwidth(MB/s)": 6622.568244628909
+    },
+    {
+        "M": 256,
+        "N": 65536,
+        "K": 512,
+        "log_file": "log/non_square_matrix_gemm_20000/m_256_n_65536_k_512.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0627795751,
+        "bandwidth(MB/s)": 4085.7237340556644
+    }
+]

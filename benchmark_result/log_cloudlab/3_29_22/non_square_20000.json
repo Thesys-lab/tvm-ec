@@ -1,0 +1,38 @@
+[
+    {
+        "M": 4,
+        "N": 65536,
+        "K": 8,
+        "log_file": "log/non_square_matrix_20000/m_4_n_65536_k_8.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 1.4954056826469121e-05,
+        "bandwidth(MB/s)": 50155.65516980977
+    },
+    {
+        "M": 16,
+        "N": 65536,
+        "K": 32,
+        "log_file": "log/non_square_matrix_20000/m_16_n_65536_k_32.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 8.842778363574119e-05,
+        "bandwidth(MB/s)": 33931.5106393467
+    },
+    {
+        "M": 128,
+        "N": 65536,
+        "K": 256,
+        "log_file": "log/non_square_matrix_20000/m_128_n_65536_k_256.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.005439903301075269,
+        "bandwidth(MB/s)": 4417.587716173172
+    },
+    {
+        "M": 256,
+        "N": 65536,
+        "K": 512,
+        "log_file": "log/non_square_matrix_20000/m_256_n_65536_k_512.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.018614945555555557,
+        "bandwidth(MB/s)": 2585.2882489703165
+    }
+]

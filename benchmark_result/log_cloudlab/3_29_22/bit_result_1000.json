@@ -1,0 +1,20 @@
+[
+    {
+        "M": 1024,
+        "N": 1024,
+        "K": 1024,
+        "log_file": "log/bitmatrix_1000/m_1024.json",
+        "tune_num_trials_total": 1000,
+        "execution_time(s)": 0.0019221016766917294,
+        "bandwidth(MB/s)": 1560.791521270363
+    },
+    {
+        "M": 2048,
+        "N": 2048,
+        "K": 2048,
+        "log_file": "log/bitmatrix_1000/m_2048.json",
+        "tune_num_trials_total": 1000,
+        "execution_time(s)": 0.01576819434,
+        "bandwidth(MB/s)": 761.0256279984434
+    }
+]

@@ -1,0 +1,11 @@
+[
+    {
+        "M": 16,
+        "N": 65536,
+        "K": 32,
+        "log_file": "log/16_65536_32_only/m_16_n_65536_k_32.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.00093108408,
+        "bandwidth(MB/s)": 12890.300009210769
+    }
+]

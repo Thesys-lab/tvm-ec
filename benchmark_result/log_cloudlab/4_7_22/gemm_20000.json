@@ -1,0 +1,42 @@
+[
+    {
+        "M": 4,
+        "N": 65536,
+        "K": 8,
+        "log_file": "log/gemm_20000/m_4_n_65536_k_8.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 6.561893999999999e-05,
+        "bandwidth(MB/s)": 45720.36778272402,
+        "bandwidth_mkl(MB/s)": 24873.160032
+    },
+    {
+        "M": 16,
+        "N": 65536,
+        "K": 32,
+        "log_file": "log/gemm_20000/m_16_n_65536_k_32.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0013475709,
+        "bandwidth(MB/s)": 8906.361160663235,
+        "bandwidth_mkl(MB/s)": 20396.283726
+    },
+    {
+        "M": 128,
+        "N": 65536,
+        "K": 256,
+        "log_file": "log/gemm_20000/m_128_n_65536_k_256.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.01850568176,
+        "bandwidth(MB/s)": 5194.3506457445965,
+        "bandwidth_mkl(MB/s)": 5293.805992
+    },
+    {
+        "M": 256,
+        "N": 65536,
+        "K": 512,
+        "log_file": "log/gemm_20000/m_256_n_65536_k_512.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.058091501159999996,
+        "bandwidth(MB/s)": 3313.7377440084047,
+        "bandwidth_mkl(MB/s)": 4431.363614
+    }
+]

@@ -1,0 +1,52 @@
+[
+    {
+        "ecParity": 1,
+        "N": 65536,
+        "ecData": 2,
+        "ecW": 8,
+        "log_file": "log/expand_1/P_1_n_65536_D_2.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 8.194534000000001e-05,
+        "bandwidth(MB/s)": 18305.0709020069
+    },
+    {
+        "ecParity": 2,
+        "N": 65536,
+        "ecData": 4,
+        "ecW": 8,
+        "log_file": "log/expand_1/P_2_n_65536_D_4.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.00023003301999999999,
+        "bandwidth(MB/s)": 13041.871272029774
+    },
+    {
+        "ecParity": 8,
+        "N": 65536,
+        "ecData": 16,
+        "ecW": 8,
+        "log_file": "log/expand_1/P_8_n_65536_D_16.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.00208901546,
+        "bandwidth(MB/s)": 5744.800262272832
+    },
+    {
+        "ecParity": 16,
+        "N": 65536,
+        "ecData": 32,
+        "ecW": 8,
+        "log_file": "log/expand_1/P_16_n_65536_D_32.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.005836958980000001,
+        "bandwidth(MB/s)": 4112.399338807756
+    },
+    {
+        "ecParity": 32,
+        "N": 65536,
+        "ecData": 64,
+        "ecW": 8,
+        "log_file": "log/expand_1/P_32_n_65536_D_64.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.01850651574,
+        "bandwidth(MB/s)": 2594.525391736435
+    }
+]

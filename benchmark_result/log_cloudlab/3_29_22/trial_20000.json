@@ -1,0 +1,56 @@
+[
+    {
+        "M": 32,
+        "N": 32,
+        "K": 32,
+        "log_file": "log/trial_20000/m_32.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 7.510776864225744e-07,
+        "bandwidth(MB/s)": 3900.6451036433627
+    },
+    {
+        "M": 62,
+        "N": 62,
+        "K": 62,
+        "log_file": "log/trial_20000/m_62.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 4.137251318297331e-06,
+        "bandwidth(MB/s)": 2658.231606129009
+    },
+    {
+        "M": 128,
+        "N": 128,
+        "K": 128,
+        "log_file": "log/trial_20000/m_128.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 7.667877916973717e-06,
+        "bandwidth(MB/s)": 6113.164620975104
+    },
+    {
+        "M": 512,
+        "N": 512,
+        "K": 512,
+        "log_file": "log/trial_20000/m_512.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0002488286281018369,
+        "bandwidth(MB/s)": 3014.1226342053014
+    },
+    {
+        "M": 1024,
+        "N": 1024,
+        "K": 1024,
+        "log_file": "log/trial_20000/m_1024.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0018962940027247956,
+        "bandwidth(MB/s)": 1582.0331634700542
+    },
+    {
+        "M": 2048,
+        "N": 2048,
+        "K": 2048,
+        "log_file": "log/trial_20000/m_2048.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.014456235085714284,
+        "bandwidth(MB/s)": 830.0916475727801
+    }
+]

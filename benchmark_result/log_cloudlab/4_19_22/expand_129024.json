@@ -1,0 +1,74 @@
+[
+    {
+        "ecParity": 3,
+        "N": 129024,
+        "ecData": 8,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_3_n_129024_D_9.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.001074407085,
+        "bandwidth(MB/s)": 10078.403480994124,
+        "bandwidth_o(MB/s)": 8068.142000795023,
+        "bandwidth_x(MB/s)": 5481.916052485736
+    },
+    {
+        "ecParity": 3,
+        "N": 129024,
+        "ecData": 9,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_3_n_129024_D_10.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0014874695000000001,
+        "bandwidth(MB/s)": 8603.271449825315,
+        "bandwidth_o(MB/s)": 7522.433760170713,
+        "bandwidth_x(MB/s)": 5276.398096304089
+    },
+    {
+        "ecParity": 3,
+        "N": 129024,
+        "ecData": 10,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_3_n_129024_D_10.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0016333202,
+        "bandwidth(MB/s)": 7835.02456030112,
+        "bandwidth_o(MB/s)": 6510.78763515527,
+        "bandwidth_x(MB/s)": 5237.483196634002
+    },
+    {
+        "ecParity": 2,
+        "N": 129024,
+        "ecData": 8,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_2_n_129024_D_8.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0012876566,
+        "bandwidth(MB/s)": 7644.796035148268,
+        "bandwidth_o(MB/s)": 6604.857556958048,
+        "bandwidth_x(MB/s)": 8509.748096791325
+    },
+    {
+        "ecParity": 2,
+        "N": 129024,
+        "ecData": 9,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_2_n_129024_D_9.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.00109290454,
+        "bandwidth(MB/s)": 9907.784195956916,
+        "bandwidth_o(MB/s)": 8053.8692410539525,
+        "bandwidth_x(MB/s)": 8698.63471361893
+    },
+    {
+        "ecParity": 2,
+        "N": 129024,
+        "ecData": 10,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_2_n_129024_D_10.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0013986941,
+        "bandwidth(MB/s)": 8445.486820807084,
+        "bandwidth_o(MB/s)": 8202.546720456208,
+        "bandwidth_x(MB/s)": 8785.767332537327
+    }
+]

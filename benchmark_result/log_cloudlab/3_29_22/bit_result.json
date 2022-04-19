@@ -1,0 +1,56 @@
+[
+    {
+        "M": 32,
+        "N": 32,
+        "K": 32,
+        "log_file": "log/bitmatrix_500/m_32.json",
+        "tune_num_trials_total": 500,
+        "execution_time(s)": 2.458179930248289e-06,
+        "bandwidth(MB/s)": 1191.811658678739
+    },
+    {
+        "M": 64,
+        "N": 64,
+        "K": 64,
+        "log_file": "log/bitmatrix_500/m_64.json",
+        "tune_num_trials_total": 500,
+        "execution_time(s)": 3.0356097995361162e-06,
+        "bandwidth(MB/s)": 3860.426989592269
+    },
+    {
+        "M": 128,
+        "N": 128,
+        "K": 128,
+        "log_file": "log/bitmatrix_500/m_128.json",
+        "tune_num_trials_total": 500,
+        "execution_time(s)": 8.034031006879044e-06,
+        "bandwidth(MB/s)": 5834.555525098651
+    },
+    {
+        "M": 512,
+        "N": 512,
+        "K": 512,
+        "log_file": "log/bitmatrix_500/m_512.json",
+        "tune_num_trials_total": 500,
+        "execution_time(s)": 0.0002608183763405915,
+        "bandwidth(MB/s)": 2875.5642548000806
+    },
+    {
+        "M": 1024,
+        "N": 1024,
+        "K": 1024,
+        "log_file": "log/bitmatrix_500/m_1024.json",
+        "tune_num_trials_total": 500,
+        "execution_time(s)": 0.0020167625911949685,
+        "bandwidth(MB/s)": 1487.5325499876737
+    },
+    {
+        "M": 2048,
+        "N": 2048,
+        "K": 2048,
+        "log_file": "log/bitmatrix_500/m_2048.json",
+        "tune_num_trials_total": 500,
+        "execution_time(s)": 0.015571269757575756,
+        "bandwidth(MB/s)": 770.650061737049
+    }
+]
