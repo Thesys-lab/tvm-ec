@@ -10,6 +10,7 @@
         "bandwidth(MB/s)": 10078.403480994124,
         "bandwidth_o(MB/s)": 8068.142000795023,
         "bandwidth_x(MB/s)": 5481.916052485736,
+        "bandwidth_76(MB/s)": 5544.030168383806,
         "bandwidth_isa-l(MB/s)": 5482.825901
     },
     {
@@ -23,6 +24,7 @@
         "bandwidth(MB/s)": 8603.271449825315,
         "bandwidth_o(MB/s)": 7522.433760170713,
         "bandwidth_x(MB/s)": 5276.398096304089,
+        "bandwidth_76(MB/s)": 5451.503659354875,
         "bandwidth_isa-l(MB/s)": 4840.707104
     },
     {
@@ -36,6 +38,7 @@
         "bandwidth(MB/s)": 7835.02456030112,
         "bandwidth_o(MB/s)": 6510.78763515527,
         "bandwidth_x(MB/s)": 5237.483196634002,
+        "bandwidth_76(MB/s)": 5462.46705860787,
         "bandwidth_isa-l(MB/s)": 5438.962931
     },
     {
@@ -49,6 +52,7 @@
         "bandwidth(MB/s)": 7644.796035148268,
         "bandwidth_o(MB/s)": 6604.857556958048,
         "bandwidth_x(MB/s)": 8509.748096791325,
+        "bandwidth_76(MB/s)": 8483.458747791903,
         "bandwidth_isa-l(MB/s)": 7850.395816
     },
     {
@@ -62,6 +66,7 @@
         "bandwidth(MB/s)": 9907.784195956916,
         "bandwidth_o(MB/s)": 8053.8692410539525,
         "bandwidth_x(MB/s)": 8698.63471361893,
+        "bandwidth_76(MB/s)": 8861.17769246977,
         "bandwidth_isa-l(MB/s)": 7659.319003
     },
     {
@@ -75,6 +80,7 @@
         "bandwidth(MB/s)": 8445.486820807084,
         "bandwidth_o(MB/s)": 8202.546720456208,
         "bandwidth_x(MB/s)": 8785.767332537327,
+        "bandwidth_76(MB/s)": 9068.68666898257,
         "bandwidth_isa-l(MB/s)": 8158.335853
     }
 ]
