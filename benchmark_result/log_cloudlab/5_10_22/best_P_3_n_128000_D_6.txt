@@ -1,0 +1,46 @@
+Lowered TIR:
+@main = primfn(A_1: handle, B_1: handle, bitmul_1: handle) -> ()
+  attr = {"from_legacy_te_schedule": True, "global_symbol": "main", "tir.noalias": True}
+  buffers = {bitmul: Buffer(bitmul_2: Pointer(uint8), uint8, [24, 128000], []),
+             B: Buffer(B_2: Pointer(uint8), uint8, [48, 128000], []),
+             A: Buffer(A_2: Pointer(uint8), uint8, [24, 48], [])}
+  buffer_map = {A_1: A, B_1: B, bitmul_1: bitmul} {
+  allocate(auto_scheduler_layout_transform: Pointer(global uint8), uint8, [6144000]), storage_scope = global {
+    for (ax0.ax1.fused.ax2.fused: int32, 0, 2000) "parallel" {
+      for (ax4: int32, 0, 24) {
+        for (ax6: int32, 0, 2) {
+          for (ax7: int32, 0, 64) {
+            auto_scheduler_layout_transform[((((ax0.ax1.fused.ax2.fused*3072) + (ax4*128)) + (ax6*64)) + ax7)] = (uint8*)B_2[((((ax4*256000) + (ax6*128000)) + (ax0.ax1.fused.ax2.fused*64)) + ax7)]
+          }
+        }
+      }
+    }
+    for (i.outer.outer.j.outer.outer.fused: int32, 0, 16) "parallel" {
+      allocate(bitmul.local: Pointer(local uint8), uint8, [384]), storage_scope = local;
+      for (i.outer.inner: int32, 0, 4) {
+        for (j.outer.inner: int32, 0, 125) {
+          for (i.c.inner.init: int32, 0, 6) {
+            for (j.c.inner.init: int32, 0, 64) {
+              bitmul.local[((i.c.inner.init*64) + j.c.inner.init)] = 0u8
+            }
+          }
+          for (k.outer: int32, 0, 24) {
+            for (k.inner: int32, 0, 2) {
+              for (i.c.inner: int32, 0, 6) {
+                for (j.c.inner: int32, 0, 64) {
+                  let cse_var_1: int32 = ((i.c.inner*64) + j.c.inner)
+                  bitmul.local[cse_var_1] = @tir.bitwise_xor((uint8*)bitmul.local[cse_var_1], @tir.bitwise_and((uint8*)A_2[((((i.outer.inner*288) + (i.c.inner*48)) + (k.outer*2)) + k.inner)], (uint8*)auto_scheduler_layout_transform[(((((i.outer.outer.j.outer.outer.fused*384000) + (j.outer.inner*3072)) + (k.outer*128)) + (k.inner*64)) + j.c.inner)], dtype=uint8), dtype=uint8)
+                }
+              }
+            }
+          }
+          for (i.inner: int32, 0, 6) {
+            for (j.inner: int32, 0, 64) {
+              bitmul_2[(((((i.outer.inner*768000) + (i.inner*128000)) + (i.outer.outer.j.outer.outer.fused*8000)) + (j.outer.inner*64)) + j.inner)] = (uint8*)bitmul.local[((i.inner*64) + j.inner)]
+            }
+          }
+        }
+      }
+    }
+  }
+}

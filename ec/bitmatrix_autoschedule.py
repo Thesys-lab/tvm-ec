@@ -122,6 +122,9 @@ def get_best_benchmark(argv):
     
     sch, args = task.apply_best(log_file)
 
+    print("Lowered TIR:")
+    print(tvm.lower(sch, args, simple_mode=True))
+
     func = tvm.build(sch, args, target)
     a_np = np.random.randint(np.iinfo(np.uint8).max, size=(M, ecData)).astype(np.uint8)
     a_np_expanded = np_expand_bitmatrix(a_np)

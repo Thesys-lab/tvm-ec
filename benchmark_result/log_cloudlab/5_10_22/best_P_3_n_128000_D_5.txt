@@ -1,0 +1,52 @@
+Lowered TIR:
+@main = primfn(A_1: handle, B_1: handle, bitmul_1: handle) -> ()
+  attr = {"from_legacy_te_schedule": True, "global_symbol": "main", "tir.noalias": True}
+  buffers = {B: Buffer(B_2: Pointer(uint8), uint8, [40, 128000], []),
+             bitmul: Buffer(bitmul_2: Pointer(uint8), uint8, [24, 128000], []),
+             A: Buffer(A_2: Pointer(uint8), uint8, [24, 40], [])}
+  buffer_map = {A_1: A, B_1: B, bitmul_1: bitmul} {
+  allocate(auto_scheduler_layout_transform: Pointer(global uint8), uint8, [5120000]), storage_scope = global {
+    for (ax0.ax1.fused.ax2.fused: int32, 0, 8000) "parallel" {
+      for (ax3: int32, 0, 5) {
+        for (ax4: int32, 0, 2) {
+          for (ax5: int32, 0, 64) {
+            auto_scheduler_layout_transform[((((ax0.ax1.fused.ax2.fused*640) + (ax3*128)) + (ax4*64)) + ax5)] = (uint8*)B_2[(((((floormod(ax0.ax1.fused.ax2.fused, 20)*256000) + (ax4*128000)) + (floordiv(ax0.ax1.fused.ax2.fused, 20)*320)) + (ax3*64)) + ax5)]
+          }
+        }
+      }
+    }
+    for (i.outer.outer.outer.j.outer.outer.outer.fused: int32, 0, 400) "parallel" {
+      for (i.outer.outer.inner: int32, 0, 24) {
+        let cse_var_1: int32 = ((i.outer.outer.inner*128000) + (i.outer.outer.outer.j.outer.outer.outer.fused*320))
+         {
+          bitmul_2[ramp(cse_var_1, 1, 64)] = broadcast(0u8, 64)
+          bitmul_2[ramp((cse_var_1 + 64), 1, 64)] = broadcast(0u8, 64)
+          bitmul_2[ramp((cse_var_1 + 128), 1, 64)] = broadcast(0u8, 64)
+          bitmul_2[ramp((cse_var_1 + 192), 1, 64)] = broadcast(0u8, 64)
+          bitmul_2[ramp((cse_var_1 + 256), 1, 64)] = broadcast(0u8, 64)
+          for (k.outer: int32, 0, 20) {
+            let cse_var_8: int32 = (cse_var_1 + 256)
+            let cse_var_7: int32 = (cse_var_1 + 192)
+            let cse_var_6: int32 = (cse_var_1 + 128)
+            let cse_var_5: int32 = (cse_var_1 + 64)
+            let cse_var_4: int32 = ((i.outer.outer.inner*40) + (k.outer*2))
+            let cse_var_3: int32 = ((i.outer.outer.outer.j.outer.outer.outer.fused*12800) + (k.outer*640))
+            let cse_var_2: int32 = (cse_var_4 + 1)
+             {
+              bitmul_2[ramp(cse_var_1, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_1, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_4], 64), (uint8x64*)auto_scheduler_layout_transform[ramp(cse_var_3, 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_1, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_1, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_2], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 64), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_5, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_5, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_4], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 128), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_5, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_5, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_2], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 192), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_6, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_6, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_4], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 256), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_6, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_6, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_2], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 320), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_7, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_7, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_4], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 384), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_7, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_7, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_2], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 448), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_8, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_8, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_4], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 512), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul_2[ramp(cse_var_8, 1, 64)] = @tir.bitwise_xor((uint8x64*)bitmul_2[ramp(cse_var_8, 1, 64)], @tir.bitwise_and(broadcast((uint8*)A_2[cse_var_2], 64), (uint8x64*)auto_scheduler_layout_transform[ramp((cse_var_3 + 576), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+            }
+          }
+        }
+      }
+    }
+  }
+}
