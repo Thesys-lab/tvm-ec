@@ -1,0 +1,13 @@
+[
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 8,
+        "ecW": 8,
+        "log_file": "log/ecData_8/P_2_n_128000_D_8.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.0007612041200000001,
+        "bandwidth(MB/s)": 10263.344344484103
+    }
+]

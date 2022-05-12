@@ -117,6 +117,10 @@ def get_best_benchmark(argv):
     K = ecData*ecW
 
     task = tvm.auto_scheduler.SearchTask(func=bitmatrix, args=(M, N, K, "uint8"), target=target)
+    # Inspect the computational graph
+    print("Computational DAG:")
+    print(task.compute_dag)
+
 
     log_file = argv['log_file']
     

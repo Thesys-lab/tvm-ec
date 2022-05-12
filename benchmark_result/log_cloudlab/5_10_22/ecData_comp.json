@@ -1,0 +1,172 @@
+[
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 3,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_2_n_128000_D_3.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.000195844195,
+        "bandwidth(MB/s)": 14959.27668420297
+    },
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 4,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_2_n_128000_D_4.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.00029064244,
+        "bandwidth(MB/s)": 13440.053696218625
+    },
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 5,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_2_n_128000_D_5.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.00035107115500000003,
+        "bandwidth(MB/s)": 13908.32721645844
+    },
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 6,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_2_n_128000_D_6.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.000504663325,
+        "bandwidth(MB/s)": 11610.463272717509
+    },
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 7,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_2_n_128000_D_7.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.0005909086350000001,
+        "bandwidth(MB/s)": 11568.518540941612
+    },
+    {
+        "ecParity": 2,
+        "N": 129024,
+        "ecData": 8,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_2_n_129024_D_8.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0012876566,
+        "bandwidth(MB/s)": 6604.857556958048
+    },
+    {
+        "ecParity": 2,
+        "N": 129024,
+        "ecData": 9,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_2_n_129024_D_9.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.00109290454,
+        "bandwidth(MB/s)": 8053.8692410539525
+    },
+    {
+        "ecParity": 2,
+        "N": 129024,
+        "ecData": 10,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_2_n_129024_D_10.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0013986941,
+        "bandwidth(MB/s)": 8202.546720456208
+    },
+    {
+        "ecParity": 3,
+        "N": 128000,
+        "ecData": 3,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_3_n_128000_D_3.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.00024101489,
+        "bandwidth(MB/s)": 12155.62864186524
+    },
+    {
+        "ecParity": 3,
+        "N": 128000,
+        "ecData": 4,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_3_n_128000_D_4.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.00026954908,
+        "bandwidth(MB/s)": 14491.794963648179
+    },
+    {
+        "ecParity": 3,
+        "N": 128000,
+        "ecData": 5,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_3_n_128000_D_5.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.00040442926499999996,
+        "bandwidth(MB/s)": 12073.341181182823
+    },
+    {
+        "ecParity": 3,
+        "N": 128000,
+        "ecData": 6,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_3_n_128000_D_6.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.0005841167350000001,
+        "bandwidth(MB/s)": 10031.171252095695
+    },
+    {
+        "ecParity": 3,
+        "N": 128000,
+        "ecData": 7,
+        "ecW": 8,
+        "log_file": "log/ecData_comp/P_3_n_128000_D_7.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "execution_time(s)": 0.000849350155,
+        "bandwidth(MB/s)": 8048.432627883608
+    },
+    {
+        "ecParity": 3,
+        "N": 129024,
+        "ecData": 8,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_3_n_129024_D_9.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.001074407085,
+        "bandwidth(MB/s)": 8068.142000795023
+    },
+    {
+        "ecParity": 3,
+        "N": 129024,
+        "ecData": 9,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_3_n_129024_D_10.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0014874695000000001,
+        "bandwidth(MB/s)": 7522.433760170713
+    },
+    {
+        "ecParity": 3,
+        "N": 129024,
+        "ecData": 10,
+        "ecW": 8,
+        "log_file": "log/expand_129024/P_3_n_129024_D_10.json",
+        "tune_num_trials_total": 20000,
+        "execution_time(s)": 0.0016333202,
+        "bandwidth(MB/s)": 6510.78763515527
+    }
+]
