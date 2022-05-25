@@ -45,6 +45,27 @@ def bitmatrix(M, N, K, dtype):
 
     return [A, B, bitmul]
 
+def print_basic_schedule(M, N, K, dtype):
+# declare a matrix element-wise multiply
+    A = te.placeholder((M, K), name="A", dtype=dtype)
+    B = te.placeholder((K, N), name="B", dtype=dtype)
+
+    k = te.reduce_axis((0, K), name="k")
+    bitmul = te.compute(
+        (M, N),
+        lambda i, j: xor(A[i, k] & B[k, j], axis = k),
+        name="bitmul",
+        attrs={"layout_free_placeholders": [B]},  # enable automatic layout transform for tensor B
+    )
+    # out = te.compute((M, N), lambda i, j: te.popcount(bitmul[i, j])&0b1, name="out")
+
+    s = te.create_schedule([bitmul.op])
+    # lower will transform the computation from definition to the real
+    # callable function. With argument `simple_mode=True`, it will
+    # return you a readable C like statement, we use it here to print the
+    # schedule result.
+    print(tvm.lower(s, [A, B, bitmul], simple_mode=True))
+
 def add_common_args(parser):
     parser.add_argument('-ecParity', type=int, default=4)
     parser.add_argument('-N', type=int, default=128)
