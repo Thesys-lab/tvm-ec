@@ -15,19 +15,20 @@ def add_common_args(parser):
     parser.add_argument('-ecData', type=int, default=8)
     parser.add_argument('-ecW', type=int, default=8)
     parser.add_argument('--read_log_file', default=None,
-                    help='Run the benchmark with tuned schedule in log file')
+                        help='Run the benchmark with tuned schedule in log file')
     parser.add_argument('--log_dir', default='log/default/',
-                    help='Specify the dir to store the log file')
+                        help='Specify the dir to store the log file')
     parser.add_argument('--result_file', default='result.json',
-                    help='Specify the location to store the benchmark result')
+                        help='Specify the location to store the benchmark result')
     parser.add_argument('--tune_num_trials_total', type=int, default=500)
-    parser.add_argument("--square_matrix_sizes", nargs="+", default=[32,], type=int,
-                    help='Specify the size of square matrix to tune on seperated by space')
+    parser.add_argument("--square_matrix_sizes", nargs="+", default=[32, ], type=int,
+                        help='Specify the size of square matrix to tune on seperated by space')
     parser.add_argument("--config_file", default=None,
-                    help='The configuration file (JSON) to run the experiment. \
+                        help='The configuration file (JSON) to run the experiment. \
                         should consists of a list of benchmark configs')
     parser.add_argument("--computation", default='b',
-                    help='Specify the computation type: "b" for bitmatrix, "g" for gemm')
+                        help='Specify the computation type: "b" for bitmatrix, "g" for gemm')
+    parser.add_argument('--export', '-e', default=None, type=str)
 
 
 def run_benchmark(argv):
@@ -48,17 +49,19 @@ def run_benchmark(argv):
                     'N': exp['N'],
                     'ecData': exp['ecData'],
                     'ecW': exp['ecW'],
-                    'log_file': argv.log_dir+'P_'+str(exp['ecParity'])+'_n_'+str(exp['N'])+'_D_'+str(exp['ecData'])+'.json',
+                    'log_file': argv.log_dir + 'P_' + str(exp['ecParity']) + '_n_' + str(exp['N']) + '_D_' + str(exp['ecData']) + '.json',
                     'tune_num_trials_total': exp['tune_num_trials_total'],
-                    'bandwidth_size': 'h'
+                    'bandwidth_size': 'h',
+                    'export': argv.export
                 }
             else:
                 a = {
                     'M': exp['M'],
                     'N': exp['N'],
                     'K': exp['K'],
-                    'log_file': argv.log_dir+'m_'+str(exp['M'])+'_n_'+str(exp['N'])+'_k_'+str(exp['K'])+'.json',
-                    'tune_num_trials_total': exp['tune_num_trials_total']
+                    'log_file': argv.log_dir + 'm_' + str(exp['M']) + '_n_' + str(exp['N']) + '_k_' + str(exp['K']) + '.json',
+                    'tune_num_trials_total': exp['tune_num_trials_total'],
+                    'export': argv.export
                 }
 
             out = benchmark(a)
@@ -67,7 +70,7 @@ def run_benchmark(argv):
 
             result.append(deepcopy(a))
 
-    else:       
+    else:
         for m in argv.square_matrix_sizes:
             if argv.computation == 'b':
                 a = {
@@ -75,17 +78,19 @@ def run_benchmark(argv):
                     'N': m,
                     'ecData': m,
                     'ecW': argv.ecW,
-                    'log_file': argv.log_dir+'P_n_d_'+str(m)+'.json',
-                    'tune_num_trials_total': exp['tune_num_trials_total'],
-                    'bandwidth_size': 'h'
+                    'log_file': argv.log_dir + 'P_n_d_' + str(m) + '.json',
+                    'tune_num_trials_total': argv.tune_num_trials_total,
+                    'bandwidth_size': 'h',
+                    'export': argv.export
                 }
             else:
                 a = {
                     'M': m,
                     'N': m,
                     'K': m,
-                    'log_file': argv.log_dir+'m_'+str(m)+'.json',
-                    'tune_num_trials_total': argv.tune_num_trials_total
+                    'log_file': argv.log_dir + 'm_' + str(m) + '.json',
+                    'tune_num_trials_total': argv.tune_num_trials_total,
+                    'export': argv.export
                 }
 
             out = benchmark(a)
@@ -103,20 +108,22 @@ def best_benchmark(argv):
     if argv.computation == 'b':
         get_best_benchmark = b_best_benchmark
         a = {
-                'ecParity': argv.ecParity,
-                'N': argv.N,
-                'ecData': argv.ecData,
-                'ecW': argv.ecW,
-                'log_file': argv.read_log_file,
-                'bandwidth_size': 'h'
-            }
+            'ecParity': argv.ecParity,
+            'N': argv.N,
+            'ecData': argv.ecData,
+            'ecW': argv.ecW,
+            'log_file': argv.read_log_file,
+            'bandwidth_size': 'h',
+            'export': argv.export
+        }
     else:
         get_best_benchmark = g_best_benchmark
         a = {
-                'M': argv.M,
-                'N': argv.N,
-                'K': argv.K,
-                'log_file': argv.read_log_file,
+            'M': argv.M,
+            'N': argv.N,
+            'K': argv.K,
+            'log_file': argv.read_log_file,
+            'export': argv.export
         }
     print(get_best_benchmark(a))
 

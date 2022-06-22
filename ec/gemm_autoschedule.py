@@ -1,5 +1,5 @@
 import argparse
-from common import get_tvm_target_string
+from common import get_tvm_target_string, export_lib
 import numpy as np
 import tvm
 from tvm import te, auto_scheduler
@@ -16,7 +16,8 @@ def matmul_add(M, N, K, dtype):
         (M, N),
         lambda i, j: te.sum(A[i, k] * B[k, j], axis=k),
         name="matmul",
-        attrs={"layout_free_placeholders": [B]},  # enable automatic layout transform for tensor B
+        # enable automatic layout transform for tensor B
+        attrs={"layout_free_placeholders": [B]},
     )
     out = te.compute((M, N), lambda i, j: matmul[i, j] + C[i, j], name="out")
 
@@ -33,7 +34,8 @@ def matmul(M, N, K, dtype):
         (M, N),
         lambda i, j: te.sum(A[i, k] * B[k, j], axis=k),
         name="matmul",
-        attrs={"layout_free_placeholders": [B]},  # enable automatic layout transform for tensor B
+        # enable automatic layout transform for tensor B
+        attrs={"layout_free_placeholders": [B]},
     )
 
     return [A, B, matmul]
@@ -44,9 +46,15 @@ def add_common_args(parser):
     parser.add_argument('-N', type=int, default=128)
     parser.add_argument('-K', type=int, default=64)
     parser.add_argument('--log_dir', default='log/matmul.json',
-                    help='Directory to save log to')
+                        help='Directory to save log to')
     parser.add_argument('--tune_num_trials_total', type=int, default=10)
     parser.add_argument('--tune_verbose', type=int, default=1)
+    parser.add_argument(
+        '--print_basic',
+        '-p',
+        default=False,
+        action='store_true')
+    parser.add_argument('--export', '-e', default=None, type=str)
 
 
 def benchmark(argv):
@@ -56,7 +64,9 @@ def benchmark(argv):
     N = argv['N']
     K = argv['K']
 
-    task = tvm.auto_scheduler.SearchTask(func=matmul, args=(M, N, K, "float32"), target=target)
+    task = tvm.auto_scheduler.SearchTask(
+        func=matmul, args=(
+            M, N, K, "float32"), target=target)
 
     log_file = argv['log_file']
     tune_option = auto_scheduler.TuningOptions(
@@ -73,6 +83,9 @@ def benchmark(argv):
     b_np = np.random.uniform(size=(K, N)).astype(np.float32)
     out_np = a_np.dot(b_np)
 
+    if argv["export"]:
+        export_lib(func, argv["export"])
+
     dev = tvm.cpu()
     a_tvm = tvm.nd.array(a_np, device=dev)
     b_tvm = tvm.nd.array(b_np, device=dev)
@@ -86,7 +99,8 @@ def benchmark(argv):
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
     # bandwidth = ((M*N)+(N*K)+(K*M))*4/(1024**2)/ex_time
-    bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
+    bandwidth = (a_np.size + b_np.size + out_np.size) * \
+        out_np.itemsize / (1024**2) / ex_time
     return (ex_time, bandwidth)
 
 
@@ -97,16 +111,24 @@ def get_best_benchmark(argv):
     N = argv['N']
     K = argv['K']
 
-    task = tvm.auto_scheduler.SearchTask(func=matmul, args=(M, N, K, "float32"), target=target)
+    task = tvm.auto_scheduler.SearchTask(
+        func=matmul, args=(
+            M, N, K, "float32"), target=target)
 
     log_file = argv['log_file']
-    
+
     sch, args = task.apply_best(log_file)
+
+    print("Lowered TIR:")
+    print(tvm.lower(sch, args, simple_mode=True))
 
     func = tvm.build(sch, args, target)
     a_np = np.random.uniform(size=(M, K)).astype(np.float32)
     b_np = np.random.uniform(size=(K, N)).astype(np.float32)
     out_np = a_np.dot(b_np)
+
+    if argv["export"]:
+        export_lib(func, argv["export"])
 
     dev = tvm.cpu()
     a_tvm = tvm.nd.array(a_np, device=dev)
@@ -121,8 +143,31 @@ def get_best_benchmark(argv):
     ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
 
     # bandwidth = ((M*N)+(N*K)+(K*M))*4/(1024**2)/ex_time
-    bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
+    bandwidth = (a_np.size + b_np.size + out_np.size) * \
+        out_np.itemsize / (1024**2) / ex_time
     return (ex_time, bandwidth)
+
+
+def print_basic_schedule(M, N, K, dtype):
+    # declare a matrix element-wise multiply
+    A = te.placeholder((M, K), name="A", dtype=dtype)
+    B = te.placeholder((K, N), name="B", dtype=dtype)
+
+    k = te.reduce_axis((0, K), name="k")
+    matmul = te.compute(
+        (M, N),
+        lambda i, j: te.sum(A[i, k] * B[k, j], axis=k),
+        name="matmul",
+        # enable automatic layout transform for tensor B
+        attrs={"layout_free_placeholders": [B]},
+    )
+
+    s = te.create_schedule([matmul.op])
+    # lower will transform the computation from definition to the real
+    # callable function. With argument `simple_mode=True`, it will
+    # return you a readable C like statement, we use it here to print the
+    # schedule result.
+    print(tvm.lower(s, [A, B, matmul], simple_mode=True))
 
 
 def main():
@@ -136,7 +181,13 @@ def main():
     N = argv.N
     K = argv.K
 
-    task = tvm.auto_scheduler.SearchTask(func=matmul, args=(M, N, K, "float32"), target=target)
+    if argv.print_basic:
+        print_basic_schedule(M, N, K, "uint8")
+        exit(0)
+
+    task = tvm.auto_scheduler.SearchTask(
+        func=matmul, args=(
+            M, N, K, "float32"), target=target)
 
     # Inspect the computational graph
     print("Computational DAG:")
@@ -176,8 +227,9 @@ def main():
     )
 
     # bandwidth = ((M*N)+(N*K)+(K*M))*4/(1024**2)/ex_time
-    bandwidth = (a_np.size+b_np.size+out_np.size)*out_np.itemsize/(1024**2)/ex_time
-    print("Bandwidth: %.3f MB/s"% (bandwidth))
+    bandwidth = (a_np.size + b_np.size + out_np.size) * \
+        out_np.itemsize / (1024**2) / ex_time
+    print("Bandwidth: %.3f MB/s" % (bandwidth))
 
 
 if __name__ == '__main__':

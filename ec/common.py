@@ -2,10 +2,10 @@
 Utility scripts
 """
 
-from ctypes import sizeof
 import psutil
 import subprocess
 import numpy as np
+from pathlib import Path
 
 
 def get_tvm_target_string():
@@ -55,6 +55,13 @@ def np_bitmatrix_popcount(M, N, K, A, B):
                 out[i, j] = np.bitwise_xor(np.bitwise_and(A[i, k], B[k, j]), out[i, j])
             out[i, j] = np.bitwise_and(out[i, j].bit_count(), 0b1)
     return out
+
+def export_lib(func, lib_name):
+    output_file = Path(lib_name)
+    output_file.parent.mkdir(exist_ok=True, parents=True)
+
+    # export library
+    func.export_library(lib_name)
 
 if __name__ == '__main__':
     A = np.array(
