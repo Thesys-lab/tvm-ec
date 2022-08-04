@@ -30,7 +30,8 @@ RUN apt install -y cmake \
 RUN apt install -y libgl1-mesa-glx \
  && apt install -y libglib2.0-0
 
-RUN apt install -y vim
+RUN apt install -y vim \
+ && apt install -y tmux
 
 ADD config.sh config.sh
 ADD apt.txt apt.txt

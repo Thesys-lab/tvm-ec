@@ -69,6 +69,8 @@ def run_benchmark(argv):
             a['bandwidth(MB/s)'] = out[1]
 
             result.append(deepcopy(a))
+            with open(argv.result_file, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False, indent=4)
 
     else:
         for m in argv.square_matrix_sizes:
