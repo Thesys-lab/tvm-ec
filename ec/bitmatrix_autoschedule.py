@@ -1,6 +1,7 @@
 import argparse
 from common import get_tvm_target_string, export_lib
 import numpy as np
+from statistics import mean
 import tvm
 from tvm import te, auto_scheduler
 from common import np_bitmatrix, np_expand_bitmatrix
@@ -218,10 +219,13 @@ def get_best_benchmark(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    evaluator = func.time_evaluator(
-        func.entry_name, dev, number=100, repeat=10)
-    ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
+    ex_time = list()
+    for _ in range(50):
+        evaluator = func.time_evaluator(
+            func.entry_name, dev, number=100, repeat=10)
+        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
 
+    ex_time = mean(ex_time)
     bandwidth = 0
     if argv['bandwidth_size'] == 'f':
         bandwidth = (a_np.size + b_np.size + out_np.size) * \
@@ -297,9 +301,13 @@ def main():
     # Check results
     np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    evaluator = func.time_evaluator(
-        func.entry_name, dev, number=100, repeat=10)
-    ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
+    ex_time = list()
+    for _ in range(50):
+        evaluator = func.time_evaluator(
+            func.entry_name, dev, number=100, repeat=10)
+        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+
+    ex_time = mean(ex_time)
     print(
         "Execution time of this operator: %.6f s"
         % (ex_time)
