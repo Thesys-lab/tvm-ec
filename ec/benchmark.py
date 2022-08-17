@@ -1,5 +1,7 @@
 from bitmatrix_autoschedule import benchmark as b_benchmark
+from bitmatrix_autoschedule import benchmark_decode as b_benchmark_decode
 from bitmatrix_autoschedule import get_best_benchmark as b_best_benchmark
+from bitmatrix_autoschedule import get_best_benchmark_decode as b_best_benchmark_decode
 from gemm_autoschedule import benchmark as g_benchmark
 from gemm_autoschedule import get_best_benchmark as g_best_benchmark
 from copy import deepcopy
@@ -29,12 +31,16 @@ def add_common_args(parser):
     parser.add_argument("--computation", default='b',
                         help='Specify the computation type: "b" for bitmatrix, "g" for gemm')
     parser.add_argument('--export', '-e', default=None, type=str)
+    parser.add_argument('--decode', action='store_true')
 
 
 def run_benchmark(argv):
     result = []
     if argv.computation == 'b':
-        benchmark = b_benchmark
+        if argv.decode:
+            benchmark = b_benchmark_decode
+        else:
+            benchmark = b_benchmark
     else:
         benchmark = g_benchmark
     a = {}
@@ -45,18 +51,18 @@ def run_benchmark(argv):
         for exp in experiments:
             if argv.computation == 'b':
                 a = {
-                    'ecParity': exp['ecParity'],
+                    'ecParity': exp.get('ecParity', None),
                     'N': exp['N'],
                     'ecData': exp['ecData'],
                     'ecW': exp['ecW'],
-                    'log_file': argv.log_dir + 'P_' + str(exp['ecParity']) + '_n_' + str(exp['N']) + '_D_' + str(exp['ecData']) + '.json',
+                    'log_file': argv.log_dir + 'P_' + str(exp.get('ecParity', 'X')) + '_n_' + str(exp['N']) + '_D_' + str(exp['ecData']) + '.json',
                     'tune_num_trials_total': exp['tune_num_trials_total'],
                     'bandwidth_size': 'h',
                     'export': argv.export
                 }
             else:
                 a = {
-                    'M': exp['M'],
+                    'M': exp.get('M', None),
                     'N': exp['N'],
                     'K': exp['K'],
                     'log_file': argv.log_dir + 'm_' + str(exp['M']) + '_n_' + str(exp['N']) + '_k_' + str(exp['K']) + '.json',
@@ -67,6 +73,11 @@ def run_benchmark(argv):
             out = benchmark(a)
             a['execution_time(s)'] = out[0]
             a['bandwidth(MB/s)'] = out[1]
+            
+            try:
+                a['std'] = out[2]
+            except:
+                pass
 
             result.append(deepcopy(a))
             with open(argv.result_file, 'w', encoding='utf-8') as f:
@@ -108,7 +119,10 @@ def run_benchmark(argv):
 def best_benchmark(argv):
     a = {}
     if argv.computation == 'b':
-        get_best_benchmark = b_best_benchmark
+        if argv.decode:
+            get_best_benchmark = b_best_benchmark_decode
+        else:
+            get_best_benchmark = b_best_benchmark
         a = {
             'ecParity': argv.ecParity,
             'N': argv.N,

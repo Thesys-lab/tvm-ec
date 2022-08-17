@@ -1,7 +1,7 @@
 import argparse
 from common import get_tvm_target_string, export_lib
 import numpy as np
-from statistics import mean
+from statistics import mean, pstdev
 import tvm
 from tvm import te, auto_scheduler
 from common import np_bitmatrix, np_expand_bitmatrix
@@ -89,6 +89,7 @@ def add_common_args(parser):
     parser.add_argument('--tune_num_trials_total', type=int, default=10)
     parser.add_argument('--tune_verbose', type=int, default=1)
     parser.add_argument('--bandwidth_size', default='h')
+    parser.add_argument('--decode', action='store_true')
     parser.add_argument(
         '--print_basic',
         '-p',
@@ -151,17 +152,89 @@ def benchmark(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    evaluator = func.time_evaluator(
-        func.entry_name, dev, number=100, repeat=10)
-    ex_time = np.median(evaluator(a_tvm, b_tvm, out_tvm).results)
+    ex_time = list()
+    for _ in range(200):
+        evaluator = func.time_evaluator(
+            func.entry_name, dev, number=100, repeat=10)
+        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
 
+    ex_time = np.array(ex_time)
     bandwidth = 0
     if argv['bandwidth_size'] == 'f':
         bandwidth = (a_np.size + b_np.size + out_np.size) * \
             out_np.itemsize / (1024**2) / ex_time
     else:
         bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
-    return (ex_time, bandwidth)
+    return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
+
+
+def benchmark_decode(argv):
+    target = get_tvm_target_string()
+
+    ecData = argv['ecData']
+    ecW = argv['ecW']
+    N = argv['N']
+    K = ecData * ecW
+
+    task = tvm.auto_scheduler.SearchTask(
+        func=bitmatrix, args=(
+            K, N, K, "uint8"), target=target)
+
+    log_file = argv['log_file']
+    tune_option = auto_scheduler.TuningOptions(
+        num_measure_trials=argv['tune_num_trials_total'],
+        measure_callbacks=[auto_scheduler.RecordToFile(log_file)],
+        verbose=0,
+    )
+
+    task.tune(tune_option)
+    sch, args = task.apply_best(log_file)
+
+    func = tvm.build(sch, args, target)
+    a_np = np.random.randint(
+        np.iinfo(
+            np.uint8).max,
+        size=(
+            K,
+            ecData)).astype(
+                np.uint8)
+    a_np_expanded = np_expand_bitmatrix(a_np)
+    b_np = np.random.randint(
+        np.iinfo(
+            np.uint8).max,
+        size=(
+            K,
+            N)).astype(
+                np.uint8)
+    # out_np = np_bitmatrix(M, N, K, a_np, b_np)
+    out_np = np.random.uniform(size=(K, N)).astype(np.uint8)
+
+    if argv["export"]:
+        export_lib(func, argv["export"])
+
+    dev = tvm.cpu()
+    a_tvm = tvm.nd.array(a_np_expanded, device=dev)
+    b_tvm = tvm.nd.array(b_np, device=dev)
+    out_tvm = tvm.nd.empty(out_np.shape, device=dev, dtype="uint8")
+    func(a_tvm, b_tvm, out_tvm)
+
+    # Check results
+    # np.testing.assert_equal(out_np, out_tvm.numpy())
+
+    ex_time = list()
+    for _ in range(200):
+        evaluator = func.time_evaluator(
+            func.entry_name, dev, number=100, repeat=10)
+        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+
+    ex_time = np.array(ex_time)
+    bandwidth = 0
+    if argv['bandwidth_size'] == 'f':
+        bandwidth = (a_np.size + b_np.size + out_np.size) * \
+            out_np.itemsize / (1024**2) / ex_time
+    else:
+        bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
+    return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
 
 def get_best_benchmark(argv):
@@ -220,19 +293,88 @@ def get_best_benchmark(argv):
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
     ex_time = list()
-    for _ in range(50):
+    for _ in range(200):
         evaluator = func.time_evaluator(
             func.entry_name, dev, number=100, repeat=10)
         ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
 
-    ex_time = mean(ex_time)
+    ex_time = np.array(ex_time)
     bandwidth = 0
     if argv['bandwidth_size'] == 'f':
         bandwidth = (a_np.size + b_np.size + out_np.size) * \
             out_np.itemsize / (1024**2) / ex_time
     else:
         bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
-    return (ex_time, bandwidth)
+    return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
+
+
+def get_best_benchmark_decode(argv):
+    target = get_tvm_target_string()
+
+    ecData = argv['ecData']
+    ecW = argv['ecW']
+    N = argv['N']
+    K = ecData * ecW
+
+    task = tvm.auto_scheduler.SearchTask(
+        func=bitmatrix, args=(
+            K, N, K, "uint8"), target=target)
+    # Inspect the computational graph
+    print("Computational DAG:")
+    print(task.compute_dag)
+
+    log_file = argv['log_file']
+
+    sch, args = task.apply_best(log_file)
+
+    print("Lowered TIR:")
+    print(tvm.lower(sch, args, simple_mode=True))
+
+    func = tvm.build(sch, args, target)
+    a_np = np.random.randint(
+        np.iinfo(
+            np.uint8).max,
+        size=(
+            K,
+            ecData)).astype(
+                np.uint8)
+    a_np_expanded = np_expand_bitmatrix(a_np)
+    b_np = np.random.randint(
+        np.iinfo(
+            np.uint8).max,
+        size=(
+            K,
+            N)).astype(
+                np.uint8)
+    # out_np = np_bitmatrix(M, N, K, a_np, b_np)
+    out_np = np.random.uniform(size=(K, N)).astype(np.uint8)
+
+    if argv["export"]:
+        export_lib(func, argv["export"])
+
+    dev = tvm.cpu()
+    a_tvm = tvm.nd.array(a_np_expanded, device=dev)
+    b_tvm = tvm.nd.array(b_np, device=dev)
+    out_tvm = tvm.nd.empty(out_np.shape, dtype="uint8", device=dev)
+    func(a_tvm, b_tvm, out_tvm)
+
+    # Check results
+    # np.testing.assert_equal(out_np, out_tvm.numpy())
+
+    ex_time = list()
+    for _ in range(200):
+        evaluator = func.time_evaluator(
+            func.entry_name, dev, number=100, repeat=10)
+        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+
+    ex_time = np.array(ex_time)
+    bandwidth = 0
+    if argv['bandwidth_size'] == 'f':
+        bandwidth = (a_np.size + b_np.size + out_np.size) * \
+            out_np.itemsize / (1024**2) / ex_time
+    else:
+        bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
+    return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
 
 def main():
