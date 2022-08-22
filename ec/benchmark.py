@@ -31,7 +31,7 @@ def add_common_args(parser):
     parser.add_argument("--computation", default='b',
                         help='Specify the computation type: "b" for bitmatrix, "g" for gemm')
     parser.add_argument('--export', '-e', default=None, type=str)
-    parser.add_argument('--decode', action='store_true')
+    parser.add_argument('--decode', '-d', action='store_true')
 
 
 def run_benchmark(argv):
