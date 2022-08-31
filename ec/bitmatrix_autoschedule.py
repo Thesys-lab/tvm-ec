@@ -165,6 +165,9 @@ def benchmark(argv):
             out_np.itemsize / (1024**2) / ex_time
     else:
         bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
+
+    del task
+
     return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
 
@@ -234,6 +237,9 @@ def benchmark_decode(argv):
             out_np.itemsize / (1024**2) / ex_time
     else:
         bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
+
+    del task
+
     return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
 

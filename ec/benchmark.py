@@ -7,6 +7,7 @@ from gemm_autoschedule import get_best_benchmark as g_best_benchmark
 from copy import deepcopy
 import json
 import argparse
+import gc
 
 
 def add_common_args(parser):
@@ -82,6 +83,8 @@ def run_benchmark(argv):
             result.append(deepcopy(a))
             with open(argv.result_file, 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=4)
+
+            gc.collect()
 
     else:
         for m in argv.square_matrix_sizes:
