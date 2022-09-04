@@ -1,0 +1,51 @@
+Lowered TIR
+@main = primfn(A_1 handle, B_1 handle, bitmul_1 handle) - ()
+  attr = {from_legacy_te_schedule True, global_symbol main, tir.noalias True}
+  buffers = {bitmul Buffer(bitmul_2 Pointer(uint8), uint8, [32, 128000], []),
+             B Buffer(B_2 Pointer(uint8), uint8, [80, 128000], []),
+             A Buffer(A_2 Pointer(uint8), uint8, [32, 80], [])}
+  buffer_map = {A_1 A, B_1 B, bitmul_1 bitmul} {
+  allocate(auto_scheduler_layout_transform Pointer(global uint8), uint8, [10240000]), storage_scope = global {
+    for (ax0.ax1.fused.ax2.fused int32, 0, 400) parallel {
+      for (ax4 int32, 0, 20) {
+        for (ax5 int32, 0, 5) {
+          for (ax6 int32, 0, 4) {
+            for (ax7 int32, 0, 64) {
+              auto_scheduler_layout_transform[(((((ax0.ax1.fused.ax2.fused25600) + (ax41280)) + (ax5256)) + (ax664)) + ax7)] = (uint8)B_2[(((((ax4512000) + (ax6128000)) + (ax0.ax1.fused.ax2.fused320)) + (ax564)) + ax7)]
+	      // ***Array Packing (optimize matrix B memory access pattern in subsequent bitmatrix multiplication)
+            }
+          }
+        }
+      }
+    }
+    for (i.outer.outer.j.outer.outer.fused int32, 0, 800) parallel {
+      // ***multicore parallel exectuion
+      allocate(bitmul.local Pointer(local uint8), uint8, [320]), storage_scope = local;
+      for (i.outer.inner int32, 0, 16) {
+	// ***vectorization of matrix initialization
+        bitmul.local[ramp(0, 1, 64)] = broadcast(0u8, 64)
+        bitmul.local[ramp(64, 1, 64)] = broadcast(0u8, 64)
+        bitmul.local[ramp(128, 1, 64)] = broadcast(0u8, 64)
+        bitmul.local[ramp(192, 1, 64)] = broadcast(0u8, 64)
+        bitmul.local[ramp(256, 1, 64)] = broadcast(0u8, 64)
+	// ***blocking (enhance CPU cache hit rate)
+        for (k.outer int32, 0, 20) {
+          for (j.c.outer.inner int32, 0, 5) {
+            let cse_var_3 int32 = (j.c.outer.inner64)
+            let cse_var_2 int32 = (((floormod(i.outer.outer.j.outer.outer.fused, 400)25600) + (k.outer1280)) + (j.c.outer.inner256))
+            let cse_var_1 int32 = (((floordiv(i.outer.outer.j.outer.outer.fused, 400)1280) + (i.outer.inner80)) + (k.outer4))
+             {
+	      // write cache for blocks (not directly write back to bitmul_2, but use a temporary holder to keep the result. Then write back to bitmul_2 sequentially when all blocks are ready)
+	      // vectorization
+              bitmul.local[ramp(cse_var_3, 1, 64)] = @tir.bitwise_xor((uint8x64)bitmul.local[ramp(cse_var_3, 1, 64)], @tir.bitwise_and(broadcast((uint8)A_2[cse_var_1], 64), (uint8x64)auto_scheduler_layout_transform[ramp(cse_var_2, 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul.local[ramp(cse_var_3, 1, 64)] = @tir.bitwise_xor((uint8x64)bitmul.local[ramp(cse_var_3, 1, 64)], @tir.bitwise_and(broadcast((uint8)A_2[(cse_var_1 + 1)], 64), (uint8x64)auto_scheduler_layout_transform[ramp((cse_var_2 + 64), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul.local[ramp(cse_var_3, 1, 64)] = @tir.bitwise_xor((uint8x64)bitmul.local[ramp(cse_var_3, 1, 64)], @tir.bitwise_and(broadcast((uint8)A_2[(cse_var_1 + 2)], 64), (uint8x64)auto_scheduler_layout_transform[ramp((cse_var_2 + 128), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+              bitmul.local[ramp(cse_var_3, 1, 64)] = @tir.bitwise_xor((uint8x64)bitmul.local[ramp(cse_var_3, 1, 64)], @tir.bitwise_and(broadcast((uint8)A_2[(cse_var_1 + 3)], 64), (uint8x64)auto_scheduler_layout_transform[ramp((cse_var_2 + 192), 1, 64)], dtype=uint8x64), dtype=uint8x64)
+            }
+          }
+        }
+        bitmul_2[ramp((((floordiv(i.outer.outer.j.outer.outer.fused, 400)2048000) + (i.outer.inner128000)) + (floormod(i.outer.outer.j.outer.outer.fused, 400)320)), 1, 320)] = (uint8x320)bitmul.local[ramp(0, 1, 320)]
+      }
+    }
+  }
+}
