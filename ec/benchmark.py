@@ -33,6 +33,7 @@ def add_common_args(parser):
                         help='Specify the computation type: "b" for bitmatrix, "g" for gemm')
     parser.add_argument('--export', '-e', default=None, type=str)
     parser.add_argument('--decode', '-d', action='store_true')
+    parser.add_argument('--verbose', '-v', type=int, default=1)
 
 
 def run_benchmark(argv):
@@ -87,19 +88,25 @@ def run_benchmark(argv):
             gc.collect()
 
     else:
-        for m in argv.square_matrix_sizes:
-            if argv.computation == 'b':
-                a = {
-                    'ecParity': m,
-                    'N': m,
-                    'ecData': m,
-                    'ecW': argv.ecW,
-                    'log_file': argv.log_dir + 'P_n_d_' + str(m) + '.json',
-                    'tune_num_trials_total': argv.tune_num_trials_total,
-                    'bandwidth_size': 'h',
-                    'export': argv.export
-                }
-            else:
+        if argv.computation == 'b':
+            a = {
+                'ecParity': argv.ecParity,
+                'N': argv.N,
+                'ecData': argv.ecData,
+                'ecW': argv.ecW,
+                'log_file': argv.log_dir + 'P_' + str(argv.ecParity) + '_n_' + str(argv.N) + '_D_' + str(argv.ecData) + '.json',
+                'tune_num_trials_total': argv.tune_num_trials_total,
+                'bandwidth_size': 'h',
+                'export': argv.export
+            }
+            out = benchmark(a)
+            a['execution_time(s)'] = out[0]
+            a['bandwidth(MB/s)'] = out[1]
+            a['std'] = out[2]
+
+            result.append(deepcopy(a))
+        else:
+            for m in argv.square_matrix_sizes:
                 a = {
                     'M': m,
                     'N': m,
@@ -109,11 +116,11 @@ def run_benchmark(argv):
                     'export': argv.export
                 }
 
-            out = benchmark(a)
-            a['execution_time(s)'] = out[0]
-            a['bandwidth(MB/s)'] = out[1]
+                out = benchmark(a)
+                a['execution_time(s)'] = out[0]
+                a['bandwidth(MB/s)'] = out[1]
 
-            result.append(deepcopy(a))
+                result.append(deepcopy(a))
 
     with open(argv.result_file, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=4)
@@ -133,7 +140,8 @@ def best_benchmark(argv):
             'ecW': argv.ecW,
             'log_file': argv.read_log_file,
             'bandwidth_size': 'h',
-            'export': argv.export
+            'export': argv.export,
+            'verbose': argv.verbose
         }
     else:
         get_best_benchmark = g_best_benchmark

@@ -87,7 +87,7 @@ def add_common_args(parser):
     parser.add_argument('--log_dir', default='log/bitmatrix.json',
                         help='Directory to save log to')
     parser.add_argument('--tune_num_trials_total', type=int, default=10)
-    parser.add_argument('--tune_verbose', type=int, default=1)
+    parser.add_argument('--verbose', type=int, default=1)
     parser.add_argument('--bandwidth_size', default='h')
     parser.add_argument('--decode', action='store_true')
     parser.add_argument(
@@ -152,14 +152,12 @@ def benchmark(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    ex_time = list()
-    for _ in range(200):
-        evaluator = func.time_evaluator(
-            func.entry_name, dev, number=100, repeat=10)
-        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+    evaluator = func.time_evaluator(
+        func.entry_name, dev, number=1000, repeat=10)
+    ex_time = evaluator(a_tvm, b_tvm, out_tvm).results
 
     ex_time = np.array(ex_time)
-    bandwidth = 0
+
     if argv['bandwidth_size'] == 'f':
         bandwidth = (a_np.size + b_np.size + out_np.size) * \
             out_np.itemsize / (1024**2) / ex_time
@@ -224,14 +222,12 @@ def benchmark_decode(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    ex_time = list()
-    for _ in range(200):
-        evaluator = func.time_evaluator(
-            func.entry_name, dev, number=100, repeat=10)
-        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+    evaluator = func.time_evaluator(
+        func.entry_name, dev, number=1000, repeat=10)
+    ex_time = evaluator(a_tvm, b_tvm, out_tvm).results
 
     ex_time = np.array(ex_time)
-    bandwidth = 0
+
     if argv['bandwidth_size'] == 'f':
         bandwidth = (a_np.size + b_np.size + out_np.size) * \
             out_np.itemsize / (1024**2) / ex_time
@@ -256,16 +252,19 @@ def get_best_benchmark(argv):
     task = tvm.auto_scheduler.SearchTask(
         func=bitmatrix, args=(
             M, N, K, "uint8"), target=target)
+    
     # Inspect the computational graph
-    print("Computational DAG:")
-    print(task.compute_dag)
+    if argv['verbose'] >= 1:
+        print("Computational DAG:")
+        print(task.compute_dag)
 
     log_file = argv['log_file']
 
     sch, args = task.apply_best(log_file)
 
-    print("Lowered TIR:")
-    print(tvm.lower(sch, args, simple_mode=True))
+    if argv['verbose'] >= 1:
+        print("Lowered TIR:")
+        print(tvm.lower(sch, args, simple_mode=True))
 
     func = tvm.build(sch, args, target)
     a_np = np.random.randint(
@@ -298,14 +297,12 @@ def get_best_benchmark(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    ex_time = list()
-    for _ in range(200):
-        evaluator = func.time_evaluator(
-            func.entry_name, dev, number=100, repeat=10)
-        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+    evaluator = func.time_evaluator(
+        func.entry_name, dev, number=1000, repeat=10)
+    ex_time = evaluator(a_tvm, b_tvm, out_tvm).results
 
     ex_time = np.array(ex_time)
-    bandwidth = 0
+
     if argv['bandwidth_size'] == 'f':
         bandwidth = (a_np.size + b_np.size + out_np.size) * \
             out_np.itemsize / (1024**2) / ex_time
@@ -326,15 +323,17 @@ def get_best_benchmark_decode(argv):
         func=bitmatrix, args=(
             K, N, K, "uint8"), target=target)
     # Inspect the computational graph
-    print("Computational DAG:")
-    print(task.compute_dag)
+    if argv['verbose'] >= 1:
+        print("Computational DAG:")
+        print(task.compute_dag)
 
     log_file = argv['log_file']
 
     sch, args = task.apply_best(log_file)
 
-    print("Lowered TIR:")
-    print(tvm.lower(sch, args, simple_mode=True))
+    if argv['verbose'] >= 1:    
+        print("Lowered TIR:")
+        print(tvm.lower(sch, args, simple_mode=True))
 
     func = tvm.build(sch, args, target)
     a_np = np.random.randint(
@@ -367,14 +366,12 @@ def get_best_benchmark_decode(argv):
     # Check results
     # np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    ex_time = list()
-    for _ in range(200):
-        evaluator = func.time_evaluator(
-            func.entry_name, dev, number=100, repeat=10)
-        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+    evaluator = func.time_evaluator(
+        func.entry_name, dev, number=1000, repeat=10)
+    ex_time = evaluator(a_tvm, b_tvm, out_tvm).results
 
     ex_time = np.array(ex_time)
-    bandwidth = 0
+
     if argv['bandwidth_size'] == 'f':
         bandwidth = (a_np.size + b_np.size + out_np.size) * \
             out_np.itemsize / (1024**2) / ex_time
@@ -449,13 +446,12 @@ def main():
     # Check results
     np.testing.assert_equal(out_np, out_tvm.numpy())
 
-    ex_time = list()
-    for _ in range(50):
-        evaluator = func.time_evaluator(
-            func.entry_name, dev, number=100, repeat=10)
-        ex_time.append(np.mean(evaluator(a_tvm, b_tvm, out_tvm).results))
+    evaluator = func.time_evaluator(
+        func.entry_name, dev, number=1000, repeat=10)
+    ex_time = evaluator(a_tvm, b_tvm, out_tvm).results
 
-    ex_time = mean(ex_time)
+    ex_time = np.array(ex_time)
+
     print(
         "Execution time of this operator: %.6f s"
         % (ex_time)
