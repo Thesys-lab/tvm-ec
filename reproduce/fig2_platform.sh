@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "autotuning in progress, this might take 1-2 days or longer, recommend run with tmux"
-echo "please check the progress inside dir platform/"
+echo "autotuning in progress, this might take 1-2 days or longer"
+echo "please dir platform/ for autotuning progress"
 echo "should contain 6 files with 20000 lines each file when done"
 echo ""
 echo "in progress..."
