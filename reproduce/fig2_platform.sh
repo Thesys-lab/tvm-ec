@@ -7,9 +7,8 @@ echo ""
 echo "in progress..."
 
 
-bak_PATHONPATH=$PYTHONPATH
-(cd ../ec && \
-    export PATHONPATH=$(pwd))
+bak_PYTHONPATH=$PYTHONPATH
+export PYTHONPATH=../ec
 
 for ecParity in 2 3 4
 do
@@ -41,4 +40,4 @@ do
     done
 done
 
-export PATHONPATH=$bak_PATHONPATH
+export PYTHONPATH=$bak_PYTHONPATH
