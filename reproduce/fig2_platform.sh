@@ -6,7 +6,6 @@ echo "should contain 6 files with 20000 lines each file when done"
 echo ""
 echo "in progress..."
 
-
 bak_PYTHONPATH=$PYTHONPATH
 export PYTHONPATH=../ec
 
@@ -15,9 +14,9 @@ do
     for ecData in 8 9 10
     do
         echo -n "Autotune Parity=$ecParity Data=$ecData..."
-            python3 ../ec/benchmark.py \
-            -ecParity $ecParity -ecData $ecData -N 128000 \
-            --log_dir platform/ --result_file tmp.json --tune_num_trials_total 20000 >/dev/null 2>&1
+        python3 ../ec/benchmark.py \
+        -ecParity $ecParity -ecData $ecData -N 128000 \
+        --log_dir platform/ --result_file tmp.json --tune_num_trials_total 20000 >/dev/null 2>&1
         echo "Done"
     done
 done
