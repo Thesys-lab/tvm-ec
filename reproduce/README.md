@@ -19,5 +19,7 @@ If you are using exact the same hardware setup as described in the paper section
 
 If not, we recommend autotune new schedules that are tailored for your platform. The pre-tuned schedules inside `log/` might not be optimal on other platforms. Executing `./fig2_platform.sh` generates the autotuned schedule for the specific hardware platform inside `platform/`. Note that it might take 1-2 days or longer to autotune all the configurations, we recommend running the script inside a **tmux** session.
 
+To re-run a specific schedule, you can use `benchmark.sh`. The script takes in 2 mandatory arguments `-p` for Parity in range [2-4] and `-d` for Data [8-10]. The script first tries to find corresponding schedule in `platform/` and them in `log/`. Note that `-d` can also take in range [3-7], but they are only tuned for the hardware platform specified in the paper.
+
 ## Reproducing **Xorslp-EC** and **ISA-L** results
 Please follow [`xorslp/reproducing/README.md`](https://github.com/JiyuuuHuuu/xorslp_ec/blob/e8e5924f0229be6e99d524a83e49a4914c579edb/reproducing/README.md) to get benchmark results of implementations from other developers. We executed `throughput_sec75_1024blk.sh` to get the results of figure 2 and figure 3.
