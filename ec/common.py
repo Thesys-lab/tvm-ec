@@ -37,6 +37,18 @@ def np_expand_bitmatrix(A):
     
     return A_expand
 
+# convert the 1s in a bitmatrix to ~0
+def np_fill_bitmatrix(A):
+    ecW = A.itemsize*8
+    A_expand = np.zeros((A.shape[0], A.shape[1])).astype(A.dtype)
+    
+    for i in range(A_expand.shape[0]):
+        for j in range(A_expand.shape[1]):
+            if A[i, j] > 0:
+                A_expand[i, j] = ~0
+    
+    return A_expand
+
 def np_bitmatrix(M, N, K, A, B):
     A = np_expand_bitmatrix(A)
     out = np.zeros([M, N], dtype=np.uint8)

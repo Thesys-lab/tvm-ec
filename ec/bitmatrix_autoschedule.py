@@ -90,11 +90,8 @@ def add_common_args(parser):
     parser.add_argument('--verbose', type=int, default=1)
     parser.add_argument('--bandwidth_size', default='h')
     parser.add_argument('--decode', action='store_true')
-    parser.add_argument(
-        '--print_basic',
-        '-p',
-        default=False,
-        action='store_true')
+    parser.add_argument('--print_basic', '-p',
+                        default=False, action='store_true')
 
 
 def benchmark(argv):
@@ -193,20 +190,12 @@ def benchmark_decode(argv):
 
     func = tvm.build(sch, args, target)
     a_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            K,
-            ecData)).astype(
-                np.uint8)
+        np.iinfo(np.uint8).max,
+        size=(K, ecData)).astype(np.uint8)
     a_np_expanded = np_expand_bitmatrix(a_np)
     b_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            K,
-            N)).astype(
-                np.uint8)
+        np.iinfo(np.uint8).max,
+        size=(K, N)).astype(np.uint8)
     # out_np = np_bitmatrix(M, N, K, a_np, b_np)
     out_np = np.random.uniform(size=(K, N)).astype(np.uint8)
 
@@ -238,8 +227,7 @@ def benchmark_decode(argv):
 
     return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
-
-def get_best_benchmark(argv):
+def get_best_encode_as_func(argv):
     target = get_tvm_target_string()
 
     ecParity = argv['ecParity']
@@ -267,21 +255,18 @@ def get_best_benchmark(argv):
         print(tvm.lower(sch, args, simple_mode=True))
 
     func = tvm.build(sch, args, target)
+    return func
+
+def get_best_benchmark(argv):
+    func = get_best_encode_as_func(argv)
+
     a_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            M,
-            ecData)).astype(
-                np.uint8)
+        np.iinfo(np.uint8).max,
+        size=(M, ecData)).astype(np.uint8)
     a_np_expanded = np_expand_bitmatrix(a_np)
     b_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            K,
-            N)).astype(
-                np.uint8)
+        np.iinfo(np.uint8).max,
+        size=(K, N)).astype(np.uint8)
     # out_np = np_bitmatrix(M, N, K, a_np, b_np)
     out_np = np.random.uniform(size=(M, N)).astype(np.uint8)
 
@@ -310,75 +295,78 @@ def get_best_benchmark(argv):
         bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
     return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
+# def get_best_decode_as_func(argv):
+#     target = get_tvm_target_string()
 
-def get_best_benchmark_decode(argv):
-    target = get_tvm_target_string()
+#     ecData = argv['ecData']
+#     ecW = argv['ecW']
+#     N = argv['N']
+#     K = ecData * ecW
 
+#     task = tvm.auto_scheduler.SearchTask(
+#         func=bitmatrix, args=(
+#             K, N, K, "uint8"), target=target)
+
+#     log_file = argv['log_file']
+
+#     sch, args = task.apply_best(log_file)
+
+#     func = tvm.build(sch, args, target)
+#     return func
+
+# def get_best_benchmark_decode(argv):
+#     func = get_best_benchmark_as_func(argv)
+#     a_np = np.random.randint(
+#         np.iinfo(np.uint8).max,
+#         size=(K, ecData)).astype(np.uint8)
+#     a_np_expanded = np_expand_bitmatrix(a_np)
+#     b_np = np.random.randint(
+#         np.iinfo(np.uint8).max,
+#         size=(K, N)).astype(np.uint8)
+#     # out_np = np_bitmatrix(M, N, K, a_np, b_np)
+#     out_np = np.random.uniform(size=(K, N)).astype(np.uint8)
+
+#     if argv["export"]:
+#         export_lib(func, argv["export"])
+
+#     dev = tvm.cpu()
+#     a_tvm = tvm.nd.array(a_np_expanded, device=dev)
+#     b_tvm = tvm.nd.array(b_np, device=dev)
+#     out_tvm = tvm.nd.empty(out_np.shape, dtype="uint8", device=dev)
+#     func(a_tvm, b_tvm, out_tvm)
+
+#     # Check results
+#     # np.testing.assert_equal(out_np, out_tvm.numpy())
+
+#     evaluator = func.time_evaluator(
+#         func.entry_name, dev, number=1000, repeat=10)
+#     ex_time = evaluator(a_tvm, b_tvm, out_tvm).results
+
+#     ex_time = np.array(ex_time)
+
+#     if argv['bandwidth_size'] == 'f':
+#         bandwidth = (a_np.size + b_np.size + out_np.size) * \
+#             out_np.itemsize / (1024**2) / ex_time
+#     else:
+#         bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
+#     return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
+
+def bitmatrix_encode(argv, encoder, data):
+    ecParity = argv['ecParity']
     ecData = argv['ecData']
     ecW = argv['ecW']
     N = argv['N']
+    M = ecParity * ecW
     K = ecData * ecW
-
-    task = tvm.auto_scheduler.SearchTask(
-        func=bitmatrix, args=(
-            K, N, K, "uint8"), target=target)
-    # Inspect the computational graph
-    if argv['verbose'] >= 1:
-        print("Computational DAG:")
-        print(task.compute_dag)
-
-    log_file = argv['log_file']
-
-    sch, args = task.apply_best(log_file)
-
-    if argv['verbose'] >= 1:    
-        print("Lowered TIR:")
-        print(tvm.lower(sch, args, simple_mode=True))
-
-    func = tvm.build(sch, args, target)
-    a_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            K,
-            ecData)).astype(
-                np.uint8)
-    a_np_expanded = np_expand_bitmatrix(a_np)
-    b_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            K,
-            N)).astype(
-                np.uint8)
-    # out_np = np_bitmatrix(M, N, K, a_np, b_np)
-    out_np = np.random.uniform(size=(K, N)).astype(np.uint8)
-
-    if argv["export"]:
-        export_lib(func, argv["export"])
-
+    assert encoder.size == (M, K)
+    assert data.size == (K, N)
+    a_tvm = tvm.nd.array(encoder, device=dev)
+    b_tvm = tvm.nd.array(data, device=dev)
+    out_tvm = tvm.nd.empty((M, N), dtype="uint8", device=dev)
     dev = tvm.cpu()
-    a_tvm = tvm.nd.array(a_np_expanded, device=dev)
-    b_tvm = tvm.nd.array(b_np, device=dev)
-    out_tvm = tvm.nd.empty(out_np.shape, dtype="uint8", device=dev)
     func(a_tvm, b_tvm, out_tvm)
 
-    # Check results
-    # np.testing.assert_equal(out_np, out_tvm.numpy())
-
-    evaluator = func.time_evaluator(
-        func.entry_name, dev, number=1000, repeat=10)
-    ex_time = evaluator(a_tvm, b_tvm, out_tvm).results
-
-    ex_time = np.array(ex_time)
-
-    if argv['bandwidth_size'] == 'f':
-        bandwidth = (a_np.size + b_np.size + out_np.size) * \
-            out_np.itemsize / (1024**2) / ex_time
-    else:
-        bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
-    return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
-
+    return out_tvm.numpy()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -421,20 +409,12 @@ def main():
     func = tvm.build(sch, args, target)
 
     a_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            M,
-            ecData)).astype(
-                np.uint8)
+        np.iinfo(np.uint8).max,
+        size=(M, ecData)).astype(np.uint8)
     a_np_expanded = np_expand_bitmatrix(a_np)
     b_np = np.random.randint(
-        np.iinfo(
-            np.uint8).max,
-        size=(
-            K,
-            N)).astype(
-                np.uint8)
+        np.iinfo(np.uint8).max,
+        size=(K, N)).astype(np.uint8)
     out_np = np_bitmatrix(M, N, K, a_np, b_np)
 
     dev = tvm.cpu()
