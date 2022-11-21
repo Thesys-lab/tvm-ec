@@ -358,12 +358,13 @@ def bitmatrix_encode(argv, encoder, data):
     N = argv['N']
     M = ecParity * ecW
     K = ecData * ecW
-    assert encoder.size == (M, K)
-    assert data.size == (K, N)
+    assert encoder.shape == (M, K)
+    assert data.shape == (K, N)
+    dev = tvm.cpu()
+    func = get_best_encode_as_func(argv)
     a_tvm = tvm.nd.array(encoder, device=dev)
     b_tvm = tvm.nd.array(data, device=dev)
     out_tvm = tvm.nd.empty((M, N), dtype="uint8", device=dev)
-    dev = tvm.cpu()
     func(a_tvm, b_tvm, out_tvm)
 
     return out_tvm.numpy()

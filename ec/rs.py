@@ -1,7 +1,8 @@
 from bitmatrix_autoschedule import bitmatrix_encode
-from pyfinite import RSCode
+from pyfinite.rs_code import RSCode
 import numpy as np
 from common import np_fill_bitmatrix
+import argparse
 
 def add_common_args(parser):
     parser.add_argument('-ecParity', '-P', type=int, default=4)
@@ -23,12 +24,12 @@ def encode(argv):
         'verbose': 0
     }
     encoder = RSCode(10, 4).CreateEncoderBitMatrix(8)
-    bitmatrix = np.array(b).astype(np.uint8)
-    bitmatrix = np_fill_bitmatrix(bitmatrix)
-    print(bitmatrix)
+    encoder = np.array(encoder).astype(np.uint8)
+    encoder = np_fill_bitmatrix(encoder)
+    print(encoder.shape)
     data = np.random.randint(np.iinfo(np.uint8).max,
-                             size=(K, N)).astype(np.uint8)
-    parity = bitmatrix_encode(argv, encoder, data)
+                             size=(K, argv.N)).astype(np.uint8)
+    parity = bitmatrix_encode(args, encoder, data)
     print(parity)
 
 if __name__ == '__main__':
