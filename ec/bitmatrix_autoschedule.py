@@ -227,7 +227,7 @@ def benchmark_decode(argv):
 
     return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
-def get_best_encode_as_func(argv):
+def get_best_as_func(argv):
     target = get_tvm_target_string()
 
     ecParity = argv['ecParity']
@@ -351,7 +351,7 @@ def get_best_benchmark(argv):
 #         bandwidth = (b_np.size) * out_np.itemsize / (1024**2) / ex_time
 #     return (np.mean(ex_time), np.mean(bandwidth), np.std(bandwidth))
 
-def bitmatrix_encode(argv, encoder, data):
+def bitmatrix_multiply(argv, encoder, data):
     ecParity = argv['ecParity']
     ecData = argv['ecData']
     ecW = argv['ecW']
@@ -361,7 +361,7 @@ def bitmatrix_encode(argv, encoder, data):
     assert encoder.shape == (M, K)
     assert data.shape == (K, N)
     dev = tvm.cpu()
-    func = get_best_encode_as_func(argv)
+    func = get_best_as_func(argv)
     a_tvm = tvm.nd.array(encoder, device=dev)
     b_tvm = tvm.nd.array(data, device=dev)
     out_tvm = tvm.nd.empty((M, N), dtype="uint8", device=dev)
