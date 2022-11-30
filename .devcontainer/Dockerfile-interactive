@@ -11,6 +11,13 @@ RUN apt-get dist-upgrade -y \
  && apt upgrade -y \
  && apt install -y git screen
 
+# setting up locales
+RUN apt install -y locales \
+ && echo "LC_ALL=en_US.UTF-8" >> /etc/environment \
+ && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+ && echo "LANG=en_US.UTF-8" > /etc/locale.conf \
+ && locale-gen en_US.UTF-8
+
 RUN apt install -y python3 \
  && apt install -y python3-dev \
  && apt install -y python3-setuptools \
@@ -32,6 +39,10 @@ RUN apt install -y libgl1-mesa-glx \
 
 RUN apt install -y vim \
  && apt install -y tmux
+
+# install dependency for GF-Complete used by Jerasure
+RUN apt install -y autoconf \
+ && apt install -y libtool
 
 ADD config.sh config.sh
 ADD apt.txt apt.txt

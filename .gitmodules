@@ -22,3 +22,9 @@
 [submodule "pyfinite"]
 	path = pyfinite
 	url = git@github.com:JiyuuuHuuu/pyfinite.git
+[submodule "Jerasure"]
+	path = Jerasure
+	url = https://github.com/JiyuuuHuuu/Jerasure.git
+[submodule "3rdparty/gf-complete"]
+	path = 3rdparty/gf-complete
+	url = https://github.com/ceph/gf-complete.git
