@@ -1,7 +1,6 @@
 from bitmatrix_autoschedule import benchmark as b_benchmark
 from bitmatrix_autoschedule import benchmark_decode as b_benchmark_decode
 from bitmatrix_autoschedule import get_best_benchmark as b_best_benchmark
-from bitmatrix_autoschedule import get_best_benchmark_decode as b_best_benchmark_decode
 from gemm_autoschedule import benchmark as g_benchmark
 from gemm_autoschedule import get_best_benchmark as g_best_benchmark
 from copy import deepcopy

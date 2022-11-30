@@ -258,7 +258,14 @@ def get_best_as_func(argv):
     return func
 
 def get_best_benchmark(argv):
-    func = get_best_encode_as_func(argv)
+    func = get_best_as_func(argv)
+
+    ecParity = argv['ecParity']
+    ecData = argv['ecData']
+    ecW = argv['ecW']
+    N = argv['N']
+    M = ecParity * ecW
+    K = ecData * ecW
 
     a_np = np.random.randint(
         np.iinfo(np.uint8).max,
