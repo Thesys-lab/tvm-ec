@@ -31,6 +31,8 @@ PKG_LDFLAGS = -L${TVM_ROOT}/build -ldl -pthread
 
 all: lib/cpp_deploy_test
 
+shared: lib/libtvm_bitmatrix.so
+
 # Build rule for all in one TVM package library
 lib/libtvm_runtime_pack.o: tvm_runtime_pack.cc
 	@mkdir -p $(@D)
@@ -40,6 +42,13 @@ lib/libtvm_runtime_pack.o: tvm_runtime_pack.cc
 lib/cpp_deploy_test: cpp_deploy.cc lib/libtvm_runtime_pack.o
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CFLAGS) -o $@  $^ $(PKG_LDFLAGS)
+
+lib/libtvm_bitmatrix.so: tvm_jerasure.cc lib/libtvm_runtime_pack.o
+	@mkdir -p $(@D)
+	$(CXX) $(PKG_CFLAGS) -shared -o $@  $^ $(PKG_LDFLAGS)
+	rm /usr/local/lib/libtvm_bitmatrix.so
+	ln -s /home/tvm/deploy/lib/libtvm_bitmatrix.so /usr/local/lib/libtvm_bitmatrix.so
+
 
 # Deploy using pre-built libtvm_runtime.so
 # lib/cpp_deploy_normal: cpp_deploy.cc lib/test_addone_sys.o

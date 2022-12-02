@@ -1,0 +1,66 @@
+#include <dlpack/dlpack.h>
+#include <tvm/runtime/module.h>
+#include <tvm/runtime/packed_func.h>
+#include <tvm/runtime/registry.h>
+
+#include <cstdio>
+#include <iostream>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
+                            char **data_ptrs, char **coding_ptrs, int size, int packetsize)
+{
+  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile("lib/P_4_n_128000_D_10.so");
+  tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
+  ICHECK(f != nullptr);
+
+  DLTensor* x;
+  DLTensor* y;
+  DLTensor* z;
+  int ndim = 2; // # of dimension of the array
+  int dtype_code = kDLUInt;
+  int dtype_bits = 8;
+  int dtype_lanes = 1;
+  int device_type = kDLCPU;
+  int device_id = 0;
+  int blk_size = w*packetsize;
+  int64_t shape_A[2] = {m*w, k*w};
+  int64_t shape_B[2] = {k*w, blk_size};
+  int64_t shape_C[2] = {m*w, blk_size};
+
+  TVMArrayAlloc(shape_A, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &x);
+  TVMArrayAlloc(shape_B, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &y);
+  TVMArrayAlloc(shape_C, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &z);
+
+  // prepare encoding bitmatrix
+  for (int i = 0; i < shape_A[0]; ++i) {
+    for (int j = 0; j < shape_A[1]; ++j) {
+      if (bitmatrix[i*k*w+j] != 0)
+        static_cast<uint8_t*>(x->data)[i*k*w+j] = static_cast<uint8_t>(~0);
+      else
+        static_cast<uint8_t*>(x->data)[i*k*w+j] = static_cast<uint8_t>(0);
+    }
+  }
+  LOG(INFO) << "encoding bitmatrix init done";
+
+  for (int i = 0; i < shape_B[0]; ++i) {
+    for (int j = 0; j < shape_B[1]; ++j) {
+      static_cast<uint8_t*>(y->data)[i*blk_size+j] = data_ptrs[i][j];
+    }
+  }
+  // Invoke the function
+  // PackedFunc is a function that can be invoked via positional argument.
+  // The signature of the function is specified in tvm.build
+  f(x, y, z);
+  // Print out the output
+  LOG(INFO) << "Finish verification...";
+  TVMArrayFree(x);
+  TVMArrayFree(y);
+}
+
+#ifdef __cplusplus
+}
+#endif

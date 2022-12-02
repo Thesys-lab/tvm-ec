@@ -38,19 +38,19 @@
  *
  */
 #define TVM_USE_LIBBACKTRACE 0
-#include "../src/runtime/c_runtime_api.cc"
-#include "../src/runtime/container.cc"
-#include "../src/runtime/cpu_device_api.cc"
-#include "../src/runtime/file_utils.cc"
-#include "../src/runtime/library_module.cc"
-#include "../src/runtime/logging.cc"
-#include "../src/runtime/module.cc"
-#include "../src/runtime/ndarray.cc"
-#include "../src/runtime/object.cc"
-#include "../src/runtime/registry.cc"
-#include "../src/runtime/thread_pool.cc"
-#include "../src/runtime/threading_backend.cc"
-#include "../src/runtime/workspace_pool.cc"
+#include "/home/tvm/src/runtime/c_runtime_api.cc"
+#include "/home/tvm/src/runtime/container.cc"
+#include "/home/tvm/src/runtime/cpu_device_api.cc"
+#include "/home/tvm/src/runtime/file_utils.cc"
+#include "/home/tvm/src/runtime/library_module.cc"
+#include "/home/tvm/src/runtime/logging.cc"
+#include "/home/tvm/src/runtime/module.cc"
+#include "/home/tvm/src/runtime/ndarray.cc"
+#include "/home/tvm/src/runtime/object.cc"
+#include "/home/tvm/src/runtime/registry.cc"
+#include "/home/tvm/src/runtime/thread_pool.cc"
+#include "/home/tvm/src/runtime/threading_backend.cc"
+#include "/home/tvm/src/runtime/workspace_pool.cc"
 
 // NOTE: all the files after this are optional modules
 // that you can include remove, depending on how much feature you use.
@@ -58,7 +58,7 @@
 // Likely we only need to enable one of the following
 // If you use Module::Load, use dso_module
 // For system packed library, use system_lib_module
-#include "../src/runtime/dso_library.cc"
+#include "/home/tvm/src/runtime/dso_library.cc"
 // #include "../src/runtime/system_library.cc"
 
 // Graph executor
