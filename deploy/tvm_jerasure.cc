@@ -24,19 +24,18 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
   int dtype_lanes = 1;
   int device_type = kDLCPU;
   int device_id = 0;
-  int blk_size = w*packetsize;
   int64_t shape_A[2] = {m*w, k*w};
-  int64_t shape_B[2] = {k*w, blk_size};
-  int64_t shape_C[2] = {m*w, blk_size};
+  int64_t shape_B[2] = {k*w, packetsize};
+  int64_t shape_C[2] = {m*w, packetsize};
 
   char* env_schedule = std::getenv("TVMEC_SCHEDULE_PATH");
   ICHECK(env_schedule != nullptr);
-  std::string file_name = "/P_" + std::to_string(m) + "_n_" + std::to_string(blk_size) + "_D_" + std::to_string(k) + ".so";
+  std::string file_name = "/P_" + std::to_string(m) + "_n_" + std::to_string(packetsize) + "_D_" + std::to_string(k) + ".so";
   tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile(env_schedule + file_name);
   tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
   ICHECK(f != nullptr);
 
-  LOG(INFO) << "Shape: " << k << " " << m << " " << w << " " << blk_size;
+  LOG(INFO) << "Shape: " << k << " " << m << " " << w << " " << packetsize;
 
   TVMArrayAlloc(shape_A, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &x);
   TVMArrayAlloc(shape_B, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &y);
@@ -53,9 +52,10 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
   }
   LOG(INFO) << "encoding bitmatrix init done";
 
-  for (int i = 0; i < shape_B[0]; ++i) {
-    for (int j = 0; j < shape_B[1]; ++j) {
-      static_cast<uint8_t*>(y->data)[i*blk_size+j] = data_ptrs[i][j];
+  for (int i = 0; i < k; ++i) {
+    for (int k = 0; k < w; ++k) {
+      for (int j = 0; j < packetsize; ++j)
+        static_cast<uint8_t*>(y->data)[(i*w+k)*packetsize+j] = data_ptrs[i][k*packetsize+j];
     }
   }
 
@@ -69,9 +69,10 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
   TVMArrayFree(x);
   TVMArrayFree(y);
 
-  for (int i = 0; i < shape_C[0]; ++i) {
-    for (int j = 0; j < shape_C[1]; ++j) {
-      coding_ptrs[i][j] = static_cast<char>(static_cast<uint8_t*>(z->data)[i*blk_size+j]);
+  for (int i = 0; i < m; ++i) {
+    for (int k = 0; k < w; ++k) {
+      for (int j = 0; j < packetsize; ++j)
+        coding_ptrs[i][k*packetsize+j] = static_cast<char>(static_cast<uint8_t*>(z->data)[(i*w+k)*packetsize+j]);
     }
   }
   LOG(INFO) << "output written";
