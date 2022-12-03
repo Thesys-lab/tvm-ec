@@ -5,18 +5,16 @@
 
 #include <cstdio>
 #include <iostream>
+#include <cstdlib>
+#include <string>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
+void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
                             char **data_ptrs, char **coding_ptrs, int size, int packetsize)
 {
-  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile("lib/P_4_n_128000_D_10.so");
-  tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
-  ICHECK(f != nullptr);
-
   DLTensor* x;
   DLTensor* y;
   DLTensor* z;
@@ -30,6 +28,15 @@ void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
   int64_t shape_A[2] = {m*w, k*w};
   int64_t shape_B[2] = {k*w, blk_size};
   int64_t shape_C[2] = {m*w, blk_size};
+
+  char* env_schedule = std::getenv("TVMEC_SCHEDULE_PATH");
+  ICHECK(env_schedule != nullptr);
+  std::string file_name = "/P_" + std::to_string(m) + "_n_" + std::to_string(blk_size) + "_D_" + std::to_string(k) + ".so";
+  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile(env_schedule + file_name);
+  tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
+  ICHECK(f != nullptr);
+
+  LOG(INFO) << "Shape: " << k << " " << m << " " << w << " " << blk_size;
 
   TVMArrayAlloc(shape_A, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &x);
   TVMArrayAlloc(shape_B, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &y);
@@ -51,14 +58,24 @@ void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
       static_cast<uint8_t*>(y->data)[i*blk_size+j] = data_ptrs[i][j];
     }
   }
+
+  LOG(INFO) << "data matrix init done";
   // Invoke the function
   // PackedFunc is a function that can be invoked via positional argument.
   // The signature of the function is specified in tvm.build
   f(x, y, z);
-  // Print out the output
-  LOG(INFO) << "Finish verification...";
+
+  LOG(INFO) << "Finish calculation";
   TVMArrayFree(x);
   TVMArrayFree(y);
+
+  for (int i = 0; i < shape_C[0]; ++i) {
+    for (int j = 0; j < shape_C[1]; ++j) {
+      coding_ptrs[i][j] = static_cast<char>(static_cast<uint8_t*>(z->data)[i*blk_size+j]);
+    }
+  }
+  LOG(INFO) << "output written";
+  TVMArrayFree(z);
 }
 
 #ifdef __cplusplus
