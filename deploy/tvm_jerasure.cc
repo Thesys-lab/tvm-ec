@@ -35,7 +35,7 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
   tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
   ICHECK(f != nullptr);
 
-  LOG(INFO) << "Shape: " << k << " " << m << " " << w << " " << packetsize;
+  // LOG(INFO) << "Shape: " << k << " " << m << " " << w << " " << packetsize;
 
   TVMArrayAlloc(shape_A, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &x);
   TVMArrayAlloc(shape_B, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &y);
@@ -50,32 +50,26 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
         static_cast<uint8_t*>(x->data)[i*k*w+j] = static_cast<uint8_t>(0);
     }
   }
-  LOG(INFO) << "encoding bitmatrix init done";
+  // LOG(INFO) << "encoding bitmatrix init done";
 
   for (int i = 0; i < k; ++i) {
-    for (int k = 0; k < w; ++k) {
-      for (int j = 0; j < packetsize; ++j)
-        static_cast<uint8_t*>(y->data)[(i*w+k)*packetsize+j] = data_ptrs[i][k*packetsize+j];
-    }
+    std::memcpy(static_cast<uint8_t*>(y->data)+i*w*packetsize, data_ptrs[i], w*packetsize*sizeof(uint8_t));
   }
+  // LOG(INFO) << "data matrix init done";
 
-  LOG(INFO) << "data matrix init done";
   // Invoke the function
   // PackedFunc is a function that can be invoked via positional argument.
   // The signature of the function is specified in tvm.build
   f(x, y, z);
 
-  LOG(INFO) << "Finish calculation";
+  // LOG(INFO) << "Finish calculation";
   TVMArrayFree(x);
   TVMArrayFree(y);
 
   for (int i = 0; i < m; ++i) {
-    for (int k = 0; k < w; ++k) {
-      for (int j = 0; j < packetsize; ++j)
-        coding_ptrs[i][k*packetsize+j] = static_cast<char>(static_cast<uint8_t*>(z->data)[(i*w+k)*packetsize+j]);
-    }
+    std::memcpy(coding_ptrs[i], static_cast<uint8_t*>(z->data)+i*w*packetsize, w*packetsize*sizeof(uint8_t));
   }
-  LOG(INFO) << "output written";
+  // LOG(INFO) << "output written";
   TVMArrayFree(z);
 }
 
