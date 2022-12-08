@@ -1,0 +1,26 @@
+{
+    "make encoding matrix": {
+        "time(microseconds)": 1.115237500000001,
+        "time std": 0.3185457774696595,
+        "throughput(MB/s)": 155.2674013066734,
+        "throughput std": 47.32824161057449
+    },
+    "matrix to bitmatrix conversion": {
+        "time(microseconds)": 16.552749999999996,
+        "time std": 4.029133002272325,
+        "throughput(MB/s)": 659.4602577808404,
+        "throughput std": 178.5591136322858
+    },
+    "encoding function": {
+        "time(microseconds)": 4376.306787499998,
+        "time std": 364.73277390400665,
+        "throughput(MB/s)": 2355.7422343562757,
+        "throughput std": 191.17969761205305
+    },
+    "decoding function": {
+        "time(microseconds)": 4986.436637499998,
+        "time std": 180.51070662335331,
+        "throughput(MB/s)": 2056.2265554898977,
+        "throughput std": 73.52410152272697
+    }
+}

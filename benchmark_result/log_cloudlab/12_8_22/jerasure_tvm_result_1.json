@@ -1,0 +1,14 @@
+{
+    "make decoding matrix": {
+        "time(microseconds)": 85.62504999999997,
+        "time std": 23.18677305458869,
+        "throughput(MB/s)": 124.63613248884774,
+        "throughput std": 20.40990028289851
+    },
+    "bitmatrix multiplication function": {
+        "time(microseconds)": 4156.9787375000005,
+        "time std": 267.41114379815457,
+        "throughput(MB/s)": 2473.29538808949,
+        "throughput std": 155.45630496870356
+    }
+}
