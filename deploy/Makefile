@@ -46,7 +46,7 @@ lib/cpp_deploy_test: cpp_deploy.cc lib/libtvm_runtime_pack.o
 lib/libtvm_bitmatrix.so: tvm_jerasure.cc lib/libtvm_runtime_pack.o
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CFLAGS) -shared -o $@  $^ $(PKG_LDFLAGS)
-	rm /usr/local/lib/libtvm_bitmatrix.so
+	rm -f /usr/local/lib/libtvm_bitmatrix.so
 	ln -s /home/tvm/deploy/lib/libtvm_bitmatrix.so /usr/local/lib/libtvm_bitmatrix.so
 # need to create a symlink in order for the linker to find it
 
