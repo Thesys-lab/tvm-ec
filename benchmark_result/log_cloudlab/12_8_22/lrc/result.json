@@ -1,0 +1,28 @@
+[
+    {
+        "ecParity": 4,
+        "N": 128000,
+        "ecData": 6,
+        "ecW": 8,
+        "log_file": "log/lrc/P_4_n_128000_D_6.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "export": null,
+        "execution_time(s)": 0.0006985666809,
+        "bandwidth(MB/s)": 8406.67914144767,
+        "std": 378.48061818110654
+    },
+    {
+        "ecParity": 4,
+        "N": 128000,
+        "ecData": 12,
+        "ecW": 8,
+        "log_file": "log/lrc/P_4_n_128000_D_12.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "export": null,
+        "execution_time(s)": 0.0020088181048,
+        "bandwidth(MB/s)": 5835.918479923239,
+        "std": 113.58681909961942
+    }
+]

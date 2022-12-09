@@ -1,0 +1,54 @@
+[
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 6,
+        "ecW": 8,
+        "log_file": "log/lrc/P_2_n_128000_D_6.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "export": null,
+        "execution_time(s)": 0.00039672597860000003,
+        "bandwidth(MB/s)": 14895.81307884868,
+        "std": 1230.5707512222018
+    },
+    {
+        "ecParity": 1,
+        "N": 128000,
+        "ecData": 3,
+        "ecW": 8,
+        "log_file": "log/lrc/P_1_n_128000_D_3.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "export": null,
+        "execution_time(s)": 0.00010444267239999999,
+        "bandwidth(MB/s)": 29196.207762478396,
+        "std": 4631.150201321087
+    },
+    {
+        "ecParity": 2,
+        "N": 128000,
+        "ecData": 12,
+        "ecW": 8,
+        "log_file": "log/lrc/P_2_n_128000_D_12.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "export": null,
+        "execution_time(s)": 0.0015421276211,
+        "bandwidth(MB/s)": 7602.298099303693,
+        "std": 154.4349450386074
+    },
+    {
+        "ecParity": 1,
+        "N": 128000,
+        "ecData": 6,
+        "ecW": 8,
+        "log_file": "log/lrc/P_1_n_128000_D_6.json",
+        "tune_num_trials_total": 20000,
+        "bandwidth_size": "h",
+        "export": null,
+        "execution_time(s)": 0.0003126087041,
+        "bandwidth(MB/s)": 18827.612451324785,
+        "std": 1204.3225337803622
+    }
+]
