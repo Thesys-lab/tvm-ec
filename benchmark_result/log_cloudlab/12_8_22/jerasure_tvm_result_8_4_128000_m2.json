@@ -1,0 +1,26 @@
+{
+    "preprocess bitmatrix": {
+        "time(microseconds)": 11.735024999999986,
+        "time std": 3.0755856859913635,
+        "throughput(MB/s)": 728.2086901183654,
+        "throughput std": 125.61306568473796
+    },
+    "data movement for data matrix": {
+        "time(microseconds)": 1015.5100140000008,
+        "time std": 307.6951491481525,
+        "throughput(MB/s)": 8734.709456117198,
+        "throughput std": 2287.4712622526135
+    },
+    "bitmatrix multiplication": {
+        "time(microseconds)": 1730.9202499999992,
+        "time std": 371.83120951022596,
+        "throughput(MB/s)": 4952.657039097218,
+        "throughput std": 1044.8916466354713
+    },
+    "data movement for output matrix": {
+        "time(microseconds)": 428.80492000000027,
+        "time std": 90.83171190882409,
+        "throughput(MB/s)": 9880.106048264044,
+        "throughput std": 1582.2565402882717
+    }
+}

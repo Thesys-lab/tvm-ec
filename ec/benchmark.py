@@ -33,6 +33,7 @@ def add_common_args(parser):
     parser.add_argument('--export', '-e', default=None, type=str)
     parser.add_argument('--decode', '-d', action='store_true')
     parser.add_argument('--verbose', '-v', type=int, default=1)
+    parser.add_argument('--input_bitmatrix', default=None, type=str)
 
 
 def run_benchmark(argv):
@@ -96,7 +97,7 @@ def run_benchmark(argv):
                 'log_file': argv.log_dir + 'P_' + str(argv.ecParity) + '_n_' + str(argv.N) + '_D_' + str(argv.ecData) + '.json',
                 'tune_num_trials_total': argv.tune_num_trials_total,
                 'bandwidth_size': 'h',
-                'export': argv.export
+                'export': argv.export,
             }
             out = benchmark(a)
             a['execution_time(s)'] = out[0]
@@ -140,7 +141,8 @@ def best_benchmark(argv):
             'log_file': argv.read_log_file,
             'bandwidth_size': 'h',
             'export': argv.export,
-            'verbose': argv.verbose
+            'verbose': argv.verbose,
+            'input_bitmatrix': argv.input_bitmatrix
         }
     else:
         get_best_benchmark = g_best_benchmark

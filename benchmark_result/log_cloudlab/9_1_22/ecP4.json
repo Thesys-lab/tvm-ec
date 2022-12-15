@@ -75,7 +75,10 @@
         "export": null,
         "execution_time(s)": 0.0011226353755650002,
         "bandwidth(MB/s)": 6982.374946197225,
-        "std": 394.9496870437359
+        "std": 394.9496870437359,
+        "execution_time_real_enc(s)": 0.0011764875346,
+        "bandwidth_real_enc(MB/s)": 6644.268938858413,
+        "std_real_enc": 158.94350746472753
     },
     {
         "ecParity": 4,
@@ -88,7 +91,10 @@
         "export": null,
         "execution_time(s)": 0.0011947638242200001,
         "bandwidth(MB/s)": 7363.148986733069,
-        "std": 221.9006079319197
+        "std": 221.9006079319197,
+        "execution_time_real_enc(s)": 0.0012922647663999999,
+        "bandwidth_real_enc(MB/s)": 6813.261248693857,
+        "std_real_enc": 279.0712806642542
     },
     {
         "ecParity": 4,
@@ -101,6 +107,9 @@
         "export": null,
         "execution_time(s)": 0.001505635015895,
         "bandwidth(MB/s)": 6489.089610498257,
-        "std": 138.34287264798266
+        "std": 138.34287264798266,
+        "execution_time_real_enc(s)": 0.0015414711474,
+        "bandwidth_real_enc(MB/s)": 6344.087120258101,
+        "std_real_enc": 234.23406066060147
     }
 ]

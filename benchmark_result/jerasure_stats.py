@@ -2,11 +2,12 @@ import numpy as np
 import argparse
 import json
 
-trace_data_size = [
-    [10*4*4, 10*4*8*8*4, 10*128000*8*1, 10*128000*8*1], #[encoding matrix, encoding bitmatrix, data matrix, survivor matrix]
-    [10*4*8*8*4, 10*128000*8*1], #[decoding bitmatrix, survivor matrix]
-    [10*4*8*8*4, 10*128000*8*1, 10*128000*8*1, 4*128000*8*1] #[preprocess bitmatrix, data movement data matrix, data matrix, data movement parity matrix]
-]
+def generate_trace_data_size(d, p, N):
+    return [
+        [d*p*4, d*p*8*8*4, d*N*8*1, d*N*8*1], #[encoding matrix, encoding bitmatrix, data matrix, survivor matrix]
+        [d*p*8*8*4, d*N*8*1], #[decoding bitmatrix, survivor matrix]
+        [d*p*8*8*4, d*N*8*1, d*N*8*1, p*N*8*1] #[preprocess bitmatrix, data movement data matrix, data matrix, data movement parity matrix]
+    ]
 
 trace_data_annotation = [
     ["make encoding matrix", "matrix to bitmatrix conversion", "encoding function", "decoding function"],
@@ -19,6 +20,9 @@ def add_common_args(parser):
     parser.add_argument('--timing_trace', '-t', required=True, type=int,
                             help="trace indicates which file is timed, range [0, 2]")
     parser.add_argument('--output_file', '-o', default=None, type=str)
+    parser.add_argument('-N', type=int, default=128)
+    parser.add_argument('--ecParity', '-P', type=int, default=4)
+    parser.add_argument('--ecData', '-D', type=int, default=10)
 
 def print_result(time_avg, time_std, throuput_avg, throuput_std, argv):
     header = ""
@@ -55,6 +59,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     argv = parser.parse_args()
+
+    ecParity = argv.ecParity
+    ecData = argv.ecData
+    N = argv.N
+
+    trace_data_size = generate_trace_data_size(ecData, ecParity, N)
 
     with open(argv.input_file) as f:
         data = f.read().splitlines()

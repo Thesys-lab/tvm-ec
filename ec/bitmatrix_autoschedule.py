@@ -266,11 +266,21 @@ def get_best_benchmark(argv):
     N = argv['N']
     M = ecParity * ecW
     K = ecData * ecW
+    input_bitmatrix = argv['input_bitmatrix']
 
-    a_np = np.random.randint(
-        np.iinfo(np.uint8).max,
-        size=(M, ecData)).astype(np.uint8)
-    a_np_expanded = np_expand_bitmatrix(a_np)
+    print(input_bitmatrix)
+    if input_bitmatrix:
+        with open(input_bitmatrix) as f:
+            a_np_expanded = [[int(x) for x in line[:-1].split(' ')] for line in f.read().splitlines()]
+        a_np_expanded = np.array(a_np_expanded)
+        a_np_expanded = np.where(a_np_expanded == 0, 0, ~0).astype(np.uint8)
+    else:
+        a_np = np.random.randint(
+            np.iinfo(np.uint8).max,
+            size=(M, ecData)).astype(np.uint8)
+        a_np_expanded = np_expand_bitmatrix(a_np)
+    print(a_np_expanded.shape)
+    print(a_np_expanded)
     b_np = np.random.randint(
         np.iinfo(np.uint8).max,
         size=(K, N)).astype(np.uint8)

@@ -27,6 +27,10 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
   DLTensor* x;
   DLTensor* y;
   DLTensor* z;
+
+  uint8_t * temp;
+  temp = new uint8_t[k*w*packetsize];
+
   int ndim = 2; // # of dimension of the array
   int dtype_code = kDLUInt;
   int dtype_bits = 8;
@@ -62,8 +66,13 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
   // LOG(INFO) << "encoding bitmatrix init done";
 
   for (int i = 0; i < k; ++i) {
-    std::memcpy(static_cast<uint8_t*>(y->data)+i*w*packetsize, data_ptrs[i], w*packetsize*sizeof(uint8_t));
+    std::memcpy(temp+i*w*packetsize, data_ptrs[i], w*packetsize*sizeof(uint8_t));
   }
+  y->data = temp;
+
+  // for (int i = 0; i < k; ++i) {
+  //   std::memcpy(static_cast<uint8_t*>(y->data)+i*w*packetsize, data_ptrs[i], w*packetsize*sizeof(uint8_t));
+  // }
   // LOG(INFO) << "data matrix init done";
 
   // Invoke the function
