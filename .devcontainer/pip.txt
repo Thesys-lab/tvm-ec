@@ -21,7 +21,7 @@ numpy
 pytest
 pytest-profiling
 pytest-xdist
-cython
+cython==0.29.14
 decorator
 scipy
 tornado

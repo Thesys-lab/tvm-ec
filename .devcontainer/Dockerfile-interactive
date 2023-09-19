@@ -1,5 +1,5 @@
 # Adapted from https://github.com/hogepodge/tvm-docker/blob/main/Dockerfile
-FROM nvidia/cuda:11.4.2-devel-ubuntu20.04
+FROM nvidia/cuda:11.4.3-devel-ubuntu20.04
 
 # Make apt non-interactive to keep installation from being blocked
 ENV DEBIAN_FRONTEND=noninteractive
