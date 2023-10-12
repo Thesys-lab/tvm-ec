@@ -39,7 +39,11 @@ lib/libtvm_runtime_pack.o: tvm_runtime_pack.cc
 	$(CXX) -c $(PKG_CFLAGS) -o $@  $^
 
 # Deploy using the all in one TVM package library
-lib/cpp_deploy_test: cpp_deploy.cc lib/libtvm_runtime_pack.o
+# lib/cpp_deploy_test: cpp_deploy.cc lib/libtvm_runtime_pack.o
+# 	@mkdir -p $(@D)
+# 	$(CXX) $(PKG_CFLAGS) -o $@  $^ $(PKG_LDFLAGS)
+
+lib/cpp_deploy_test: cpp_deploy.cc lib/P_2_n_4096_D_2_xl170.o lib/libtvm_runtime_pack.o
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CFLAGS) -o $@  $^ $(PKG_LDFLAGS)
 

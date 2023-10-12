@@ -73,7 +73,12 @@ def export_lib(func, lib_name):
     output_file.parent.mkdir(exist_ok=True, parents=True)
 
     # export library
-    func.export_library(lib_name)
+    if lib_name[-2:] == "so":
+        print("exporting shared lib...")
+        func.export_library(lib_name)
+    else:
+        print("exporting system lib...")
+        func.save(lib_name)
 
 if __name__ == '__main__':
     A = np.array(
