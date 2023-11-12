@@ -29,7 +29,7 @@ PKG_LDFLAGS = -L${TVM_ROOT}/build -ldl -pthread
 
 .PHONY: clean all
 
-all: lib/cpp_deploy_test
+all: cpp_deploy_test
 
 shared: lib/libtvm_bitmatrix.so
 
@@ -38,20 +38,21 @@ lib/libtvm_runtime_pack.o: tvm_runtime_pack.cc
 	@mkdir -p $(@D)
 	$(CXX) -c $(PKG_CFLAGS) -o $@  $^
 
-# Deploy using the all in one TVM package library
-# lib/cpp_deploy_test: cpp_deploy.cc lib/libtvm_runtime_pack.o
-# 	@mkdir -p $(@D)
-# 	$(CXX) $(PKG_CFLAGS) -o $@  $^ $(PKG_LDFLAGS)
-
-lib/cpp_deploy_test: cpp_deploy.cc lib/P_2_n_4096_D_2_xl170.o lib/libtvm_runtime_pack.o
+#Deploy using the all in one TVM package library
+cpp_deploy_test: cpp_deploy.cc lib/libtvm_runtime_pack.o
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CFLAGS) -o $@  $^ $(PKG_LDFLAGS)
+
+# cpp_deploy_test: cpp_deploy.cc lib/P_2_n_4096_D_2_m510_500.o lib/libtvm_runtime_pack.o
+# 	@mkdir -p $(@D)
+# 	$(CXX) $(PKG_CFLAGS) -o $@  $^ $(PKG_LDFLAGS)
 
 lib/libtvm_bitmatrix.so: tvm_jerasure.cc lib/libtvm_runtime_pack.o
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CFLAGS) -shared -o $@  $^ $(PKG_LDFLAGS)
-	rm -f /usr/local/lib/libtvm_bitmatrix.so
-	ln -s /home/tvm/deploy/lib/libtvm_bitmatrix.so /usr/local/lib/libtvm_bitmatrix.so
+	sudo rm -f /usr/lib/libtvm_bitmatrix.so
+	sudo cp lib/libtvm_bitmatrix.so /usr/lib/libtvm_bitmatrix.so
+	sudo ldconfig
 # need to create a symlink in order for the linker to find it
 
 

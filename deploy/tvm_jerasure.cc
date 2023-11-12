@@ -41,10 +41,11 @@ void tvm_ec_bitmatrix_multiply(int k, int m, int w, int *bitmatrix,
   int64_t shape_B[2] = {k*w, packetsize};
   int64_t shape_C[2] = {m*w, packetsize};
 
-  char* env_schedule = std::getenv("TVMEC_SCHEDULE_PATH");
-  ICHECK(env_schedule != nullptr);
-  std::string file_name = "/P_" + std::to_string(m) + "_n_" + std::to_string(packetsize) + "_D_" + std::to_string(k) + ".so";
-  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile(env_schedule + file_name);
+  // char* env_schedule = std::getenv("TVMEC_SCHEDULE_PATH");
+  // ICHECK(env_schedule != nullptr);
+  // std::string file_name = "/P_" + std::to_string(m) + "_n_" + std::to_string(packetsize) + "_D_" + std::to_string(k) + ".so";
+  // tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile(env_schedule + file_name);
+  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile("/mydata/ec_tvm_lib/P_2_n_4096_D_2_m510_500.so");
   tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
   ICHECK(f != nullptr);
 

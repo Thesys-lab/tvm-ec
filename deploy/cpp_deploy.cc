@@ -85,8 +85,8 @@ void Verify(tvm::runtime::Module mod, std::string fname) {
 void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
                             char **data_ptrs, char **coding_ptrs, int size, int packetsize)
 {
-  // tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile("lib/P_2_n_4096_D_2_xl170.so");
-  tvm::runtime::Module mod = (*tvm::runtime::Registry::Get("runtime.SystemLib"))();
+  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile("lib/P_2_n_4096_D_2_m510_500.so");
+  // tvm::runtime::Module mod = (*tvm::runtime::Registry::Get("runtime.SystemLib"))();
   LOG(INFO) << "Mod load success";
   tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
   ICHECK(f != nullptr);
