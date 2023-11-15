@@ -1,0 +1,15 @@
+[
+    {
+        "ecParity": 2,
+        "N": 8192,
+        "ecData": 2,
+        "ecW": 8,
+        "log_file": "../benchmark_result/log_cloudlab/11_14_23/log/P_2_n_8192_D_2.json",
+        "tune_num_trials_total": 500,
+        "bandwidth_size": "h",
+        "export": null,
+        "execution_time(s)": 2.6844093100000002e-05,
+        "bandwidth(MB/s)": 4728.0012955356815,
+        "std": 577.5384233285092
+    }
+]
