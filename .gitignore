@@ -5,6 +5,7 @@ __pycache__/
 *.S
 # C extensions
 *.so
+!deploy/lib/*.so
 *.ll
 .npm
 # Distribution / packaging
@@ -134,7 +135,7 @@ xcuserdata/
 .m2
 
 # Compiled Dynamic libraries
-*.so
+# *.so
 *.dylib
 *.dll
 
@@ -256,3 +257,10 @@ jvm/target
 bandwidth/*
 !bandwidth/*.*
 !bandwidth/Makefile
+
+# all executables in deploy (files without extensions)
+deploy/*
+!deploy/*.*
+!deploy/Makefile
+!deploy/lib
+deploy/*.log

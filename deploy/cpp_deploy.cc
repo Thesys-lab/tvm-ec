@@ -28,8 +28,12 @@
 
 #include <cstdio>
 #include <iostream>
+#include <cstdlib>
+#include <string>
+#include <sstream>
 
 #define talloc(type, num) (type *) malloc(sizeof(type)*(num))
+#define ITERATION 1000
 
 void Verify(tvm::runtime::Module mod, std::string fname) {
   // Get the function from the module.
@@ -85,12 +89,15 @@ void Verify(tvm::runtime::Module mod, std::string fname) {
 void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
                             char **data_ptrs, char **coding_ptrs, int size, int packetsize)
 {
-  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile("lib/P_2_n_4096_D_2_m510_500.so");
+  std::ostringstream oss;
+  oss << "lib/P_" << m << "_n_" << w*packetsize << "_D_" << k << ".so";
+  std::string filename = oss.str();
+  tvm::runtime::Module mod = tvm::runtime::Module::LoadFromFile(filename);
   // tvm::runtime::Module mod = (*tvm::runtime::Registry::Get("runtime.SystemLib"))();
-  LOG(INFO) << "Mod load success";
+  // LOG(INFO) << "Mod load success";
   tvm::runtime::PackedFunc f = mod.GetFunction("default_function");
   ICHECK(f != nullptr);
-  LOG(INFO) << "Function load success";
+  // LOG(INFO) << "Function load success";
 
   DLTensor* x;
   DLTensor* y;
@@ -105,7 +112,7 @@ void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
   int64_t shape_A[2] = {m*w, k*w};
   int64_t shape_B[2] = {k*w, blk_size};
   int64_t shape_C[2] = {m*w, blk_size};
-  std::cout << m*w << " " << k*w << " " << blk_size << std::endl;
+  // std::cout << m*w << " " << k*w << " " << blk_size << std::endl;
   TVMArrayAlloc(shape_A, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &x);
   TVMArrayAlloc(shape_B, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &y);
   TVMArrayAlloc(shape_C, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &z);
@@ -119,7 +126,7 @@ void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
         static_cast<uint8_t*>(x->data)[i*k*w+j] = static_cast<uint8_t>(0);
     }
   }
-  LOG(INFO) << "encoding bitmatrix init done";
+  // LOG(INFO) << "encoding bitmatrix init done";
 
   for (int i = 0; i < shape_B[0]; ++i) {
     for (int j = 0; j < shape_B[1]; ++j) {
@@ -131,7 +138,7 @@ void tvm_ec_bitmatrix_encode(int k, int m, int w, int *bitmatrix,
   // The signature of the function is specified in tvm.build
   f(x, y, z);
   // Print out the output
-  LOG(INFO) << "Finish verification...";
+  // LOG(INFO) << "Finish verification...";
   TVMArrayFree(x);
   TVMArrayFree(y);
 }
@@ -166,7 +173,9 @@ void TestForJerasure(int k, int m, int w, int packetsize) {
 
   LOG(INFO) << "matrix init done";
 
-  tvm_ec_bitmatrix_encode(k, m, w, bitmatrix, data_ptrs, coding_ptrs, 0, packetsize);
+  for (int it = 0; it < ITERATION; it++) {
+    tvm_ec_bitmatrix_encode(k, m, w, bitmatrix, data_ptrs, coding_ptrs, 0, packetsize);
+  }
 }
 
 void DeploySingleOp() {
@@ -176,7 +185,25 @@ void DeploySingleOp() {
   Verify(mod_dylib, "default_function");
 }
 
-int main(void) {
-  TestForJerasure(2, 2, 8, 512);
+int main(int argc, char* argv[]) {
+  if (argc != 4) {
+      std::cerr << "Usage: " << argv[0] << " <P> <D> <n>\n";
+      return 1;
+  }
+
+  int ecP, ecD, n;
+  try {
+    ecP = std::stoi(argv[1]);
+    ecD = std::stoi(argv[2]);
+    n = std::stoi(argv[3]);
+
+  } catch (const std::invalid_argument& e) {
+    std::cerr << "Invalid argument: one of the arguments is not an integer.\n";
+    return 1;
+  } catch (const std::out_of_range& e) {
+    std::cerr << "Out of range: one of the arguments is too large.\n";
+    return 1;
+  }
+  TestForJerasure(ecD, ecP, 8, n);
   return 0;
 }
