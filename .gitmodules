@@ -19,9 +19,6 @@
 [submodule "xorslp_ec"]
 	path = xorslp_ec
 	url = https://github.com/JiyuuuHuuu/xorslp_ec.git
-[submodule "pyfinite"]
-	path = pyfinite
-	url = git@github.com:JiyuuuHuuu/pyfinite.git
 [submodule "Jerasure"]
 	path = Jerasure
 	url = https://github.com/JiyuuuHuuu/Jerasure.git
